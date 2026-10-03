@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#6366f1">
-<link rel="icon" type="image/png" href="favicon.png"><link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒 </text></svg>">
-<title>Godinho Água</title>
+<title>PDV Smart - Ponto de Venda</title>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
   :root {
@@ -281,7 +280,6 @@
     margin-bottom: 12px;
     border: 1.5px solid var(--border);
     transition: all 0.2s;
-    cursor: pointer;
   }
   .toggle-row.active {
     background: var(--primary-light);
@@ -292,6 +290,7 @@
     align-items: center;
     gap: 10px;
     flex: 1;
+    cursor: pointer;
   }
   .toggle-label-icon {
     width: 36px;
@@ -1042,66 +1041,49 @@
     max-width: 180px;
   }
 
-  /* NOVO: ESTILOS DO PORTAL DO CLIENTE E PROMOÇÃO */
-  .promo-active-card {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    border: 2px solid var(--warning);
-    border-radius: var(--radius);
-    padding: 16px;
+  /* PROMO WIN MODAL */
+  .promo-win-content {
+    text-align: center;
+    padding: 10px 0;
+  }
+  .promo-win-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 16px;
+    object-fit: cover;
+    margin: 0 auto 16px;
+    background: var(--primary-light);
+    box-shadow: var(--shadow-lg);
+  }
+  .promo-win-img-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 16px;
+    background: var(--primary-light);
+    color: var(--primary);
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 14px;
+    justify-content: center;
+    font-size: 48px;
+    margin: 0 auto 16px;
   }
-  .promo-active-img {
-    width: 64px;
-    height: 64px;
-    border-radius: 12px;
-    object-fit: cover;
-    background: white;
-    flex-shrink: 0;
+  .promo-win-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--success);
+    margin-bottom: 8px;
   }
-  .promo-active-info { flex: 1; }
-  .promo-active-title { font-weight: 700; color: #92400e; font-size: 15px; }
-  .promo-active-progress { 
-    font-size: 13px; 
-    color: #78350f; 
-    margin-top: 4px; 
+  .promo-win-client {
+    font-size: 16px;
     font-weight: 600;
+    color: var(--text);
+    margin-bottom: 12px;
   }
-  .progress-bar-bg {
-    width: 100%;
-    height: 8px;
-    background: rgba(255,255,255,0.6);
-    border-radius: 4px;
-    margin-top: 6px;
-    overflow: hidden;
-  }
-  .progress-bar-fill {
-    height: 100%;
-    background: var(--warning);
-    border-radius: 4px;
-    transition: width 0.5s ease;
-  }
-
-  .customer-info-card {
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 16px;
-    margin-bottom: 14px;
-    box-shadow: var(--shadow);
-  }
-  .customer-info-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 10px;
+  .promo-win-desc {
     font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.5;
   }
-  .customer-info-row:last-child { margin-bottom: 0; }
-  .customer-info-icon { font-size: 18px; margin-top: 2px; }
-  .customer-info-label { font-weight: 600; color: var(--text); }
-  .customer-info-value { color: var(--text-muted); }
 
   @media (min-width: 768px) {
     .container { padding: 24px; }
@@ -1169,9 +1151,11 @@
       <input type="text" id="searchCatalog" placeholder="Buscar produto no catálogo..." oninput="renderCatalog()">
       <button class="search-clear" id="clearCatalogSearch" onclick="clearCatalogSearch()">✕</button>
     </div>
+
     <div class="catalog-header">
       <div class="catalog-count" id="catalogCount">0 produtos</div>
     </div>
+
     <div id="catalogList"></div>
   </div>
 
@@ -1187,13 +1171,16 @@
         <div class="stat-label">Estoque Baixo</div>
       </div>
     </div>
+
     <button class="btn btn-primary" onclick="openProductModal()" style="margin-bottom:14px;">
       ➕ Cadastrar Produto
     </button>
+
     <div class="search-box">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchProduct" placeholder="Buscar produto..." oninput="renderProducts()">
     </div>
+
     <div id="productList"></div>
   </div>
 
@@ -1209,6 +1196,7 @@
         <div class="stat-label">Faturamento</div>
       </div>
     </div>
+
     <div id="salesList"></div>
   </div>
 
@@ -1224,56 +1212,30 @@
         <div class="stat-label">A Domicílio</div>
       </div>
     </div>
+
     <button class="btn btn-primary" onclick="openClientModal()" style="margin-bottom:14px;">
       ➕ Cadastrar Cliente
     </button>
+
     <div class="search-box">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchClient" placeholder="Buscar por nome ou WhatsApp..." oninput="renderClients()">
       <button class="search-clear" id="clearClientSearch" onclick="clearClientSearch()">✕</button>
     </div>
+
     <div id="clientList"></div>
   </div>
 
-  <!-- NOVO: VIEW PORTAL DO CLIENTE -->
-  <div class="view" id="viewCustomerPortal">
-    <button class="btn btn-outline btn-sm" onclick="logoutCustomer()" style="margin-bottom: 14px; width: auto;">
-      ← Voltar / Sair
-    </button>
-    
-    <div class="customer-info-card">
-      <div class="customer-info-row">
-        <span class="customer-info-icon">👤</span>
-        <div>
-          <div class="customer-info-label">Nome</div>
-          <div class="customer-info-value" id="portalClientName">-</div>
-        </div>
+  <!-- VIEW PROMOÇÕES (NOVO) -->
+  <div class="view" id="viewPromos">
+    <div class="card">
+      <div class="card-title">🎁 Promoções Ativas</div>
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchPromoClient" placeholder="Buscar cliente na promoção..." oninput="renderPromos()">
       </div>
-      <div class="customer-info-row">
-        <span class="customer-info-icon">📱</span>
-        <div>
-          <div class="customer-info-label">Número</div>
-          <div class="customer-info-value" id="portalClientPhone">-</div>
-        </div>
-      </div>
-      <div class="customer-info-row">
-        <span class="customer-info-icon">📍</span>
-        <div>
-          <div class="customer-info-label">Endereço</div>
-          <div class="customer-info-value" id="portalClientAddress">-</div>
-        </div>
-      </div>
+      <div id="promoClientList"></div>
     </div>
-
-    <div class="card-title" style="margin-top: 20px;">🎁 Promoção Ativa</div>
-    <div id="portalPromoList">
-      <div class="empty" style="padding: 20px;">
-        <div class="empty-text">Nenhuma promoção em andamento.</div>
-      </div>
-    </div>
-
-    <div class="card-title" style="margin-top: 20px;">📜 Histórico de Compras</div>
-    <div id="portalSalesList"></div>
   </div>
 
 </div>
@@ -1302,17 +1264,6 @@
     <button class="menu-close" onclick="closeMenu()">✕</button>
   </div>
   <div class="menu-content">
-    <!-- NOVO: BOTÃO LOGIN DO CLIENTE -->
-    <button class="menu-item" onclick="openCustomerLoginModal()">
-      <div class="menu-item-icon">🔑</div>
-      <div class="menu-item-content">
-        <div class="menu-item-title">Login do Cliente</div>
-        <div class="menu-item-desc">Acesse sua conta e histórico</div>
-      </div>
-      <span class="menu-item-arrow">›</span>
-    </button>
-    <div class="menu-divider"></div>
-    
     <button class="menu-item" onclick="navigateTo('viewAdmin')">
       <div class="menu-item-icon">📦</div>
       <div class="menu-item-content">
@@ -1339,6 +1290,15 @@
       </div>
       <span class="menu-item-arrow">›</span>
     </button>
+    <div class="menu-divider"></div>
+    <button class="menu-item" onclick="navigateTo('viewPromos')">
+      <div class="menu-item-icon">🎁</div>
+      <div class="menu-item-content">
+        <div class="menu-item-title">Promoção Ativa</div>
+        <div class="menu-item-desc">Clientes participando de promoções</div>
+      </div>
+      <span class="menu-item-arrow">›</span>
+    </button>
   </div>
   <div class="menu-footer">
     PDV Smart v1.0<br>
@@ -1353,6 +1313,7 @@
     <div class="modal-title" id="modalTitle">Novo Produto</div>
     <input type="hidden" id="productId">
 
+    <!-- IMAGE UPLOAD -->
     <div class="input-group">
       <label>Foto do Produto</label>
       <label class="image-upload" id="imageUploadBox" for="productImage">
@@ -1374,9 +1335,16 @@
       <input type="text" id="productName" placeholder="Ex: Coca-Cola 350ml">
     </div>
 
+    <!-- DESCRIÇÃO DO PRODUTO -->
     <div class="input-group">
       <label>Descrição do Produto</label>
-      <textarea id="productDescription" placeholder="Ex: Refrigerante sabor cola..." maxlength="200" rows="2" oninput="updateDescCounter()"></textarea>
+      <textarea
+        id="productDescription"
+        placeholder="Ex: Refrigerante sabor cola, lata gelada, ideal para consumo imediato"
+        maxlength="200"
+        rows="2"
+        oninput="updateDescCounter()"
+      ></textarea>
       <div class="char-counter" id="descCounter">0/200</div>
     </div>
 
@@ -1410,35 +1378,32 @@
     </div>
 
     <!-- NOVO: PROMOÇÃO -->
-    <div class="toggle-row" id="promoToggleRow" style="margin-top: 12px;" onclick="togglePromo()">
-      <div class="toggle-label">
+    <div class="toggle-row" id="promoToggleRow" style="margin-top: 8px;">
+      <div class="toggle-label" onclick="togglePromo()">
         <div class="toggle-label-icon">🎁</div>
         <div class="toggle-label-text">
-          <div class="toggle-label-title">Ativar Promoção Acumulativa</div>
-          <div class="toggle-label-sub">Recompense compras repetidas</div>
+          <div class="toggle-label-title">Ativar Promoção</div>
+          <div class="toggle-label-sub">Acumule compras para ganhar</div>
         </div>
       </div>
       <label class="toggle-switch" onclick="event.stopPropagation()">
-        <input type="checkbox" id="productHasPromo" onchange="onPromoToggle()">
+        <input type="checkbox" id="productPromoActive" onchange="onPromoToggle()">
         <span class="toggle-slider"></span>
       </label>
     </div>
-    <div class="input-group" id="promoQtyGroup" style="display:none; margin-top: 12px;">
-      <label>Quantidade para ganhar a promoção</label>
-      <input type="number" id="productPromoQty" placeholder="Ex: 5" min="1">
-      <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">
-        Ao atingir esta quantidade do mesmo produto, o cliente será recompensado.
-      </div>
+    <div class="input-group" id="promoQuantityGroup" style="display:none;">
+      <label>Quantidade para Ganhar *</label>
+      <input type="number" id="productPromoQuantity" placeholder="Ex: 10" min="1">
     </div>
 
-    <div style="display:flex; gap:10px; margin-top:16px;">
+    <div style="display:flex; gap:10px; margin-top:8px;">
       <button class="btn btn-outline" onclick="closeProductModal()">Cancelar</button>
       <button class="btn btn-primary" onclick="saveProduct()">💾 Salvar</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL CLIENTE (CADASTRO) -->
+<!-- MODAL CLIENTE -->
 <div class="modal-overlay" id="clientModal">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -1459,10 +1424,14 @@
         </div>
         <input type="tel" id="clientWhatsapp" placeholder="(11) 99999-9999" inputmode="tel" autocomplete="tel">
       </div>
+      <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">
+        Digite apenas DDD + número. Ex: 11999999999
+      </div>
     </div>
 
-    <div class="toggle-row" id="deliveryToggleRow" onclick="toggleDelivery()">
-      <div class="toggle-label">
+    <!-- TOGGLE A DOMICÍLIO -->
+    <div class="toggle-row" id="deliveryToggleRow">
+      <div class="toggle-label" onclick="toggleDelivery()">
         <div class="toggle-label-icon">🏠</div>
         <div class="toggle-label-text">
           <div class="toggle-label-title">Entrega a Domicílio</div>
@@ -1475,10 +1444,11 @@
       </label>
     </div>
 
+    <!-- CAMPOS DE ENDEREÇO -->
     <div class="address-fields" id="addressFields">
       <div class="input-group">
         <label>Endereço *</label>
-        <input type="text" id="clientAddress" placeholder="Ex: Rua das Flores, 123">
+        <input type="text" id="clientAddress" placeholder="Ex: Rua das Flores, 123 - Apt 45">
       </div>
       <div class="input-group">
         <label>Bairro *</label>
@@ -1493,7 +1463,7 @@
   </div>
 </div>
 
-<!-- MODAL SELEÇÃO DE CLIENTE (PDV) -->
+<!-- MODAL SELEÇÃO DE CLIENTE PARA VENDA -->
 <div class="modal-overlay" id="clientSelectionModal">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -1505,57 +1475,31 @@
     <div id="clientSelectionList" style="max-height: 50vh; overflow-y: auto; margin-top: 12px;"></div>
     <div style="display:flex; gap:10px; margin-top:16px;">
       <button class="btn btn-outline" onclick="closeClientSelectionModal()" style="flex:1;">Cancelar</button>
-      <button class="btn btn-danger" onclick="clearSelectedClient()" style="flex:1;">🗑️ Remover</button>
+      <button class="btn btn-danger" onclick="clearSelectedClient()" style="flex:1;">🗑️ Remover Cliente</button>
     </div>
   </div>
 </div>
 
-<!-- NOVO: MODAL LOGIN DO CLIENTE -->
-<div class="modal-overlay" id="customerLoginModal">
+<!-- NOVO: MODAL DE VITÓRIA DA PROMOÇÃO -->
+<div class="modal-overlay" id="promoWinModal">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title">Login do Cliente</div>
-    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px;">
-      Digite seu número de WhatsApp cadastrado para acessar sua conta.
-    </p>
-    <div class="input-group">
-      <label>Seu Número de Celular</label>
-      <div class="whatsapp-input-wrap">
-        <div class="whatsapp-prefix">
-          <span class="flag">🇧🇷</span>
-          <span>+55</span>
-        </div>
-        <input type="tel" id="loginClientWhatsapp" placeholder="(11) 99999-9999" inputmode="tel">
-      </div>
+    <div class="promo-win-content">
+      <div class="promo-win-title">🎉 Parabéns! Você Ganhou! 🎉</div>
+      <div id="promoWinImageContainer"></div>
+      <div class="promo-win-client" id="promoWinClientName"></div>
+      <div class="promo-win-desc" id="promoWinDesc"></div>
+      <button class="btn btn-success" onclick="closePromoWinModal()" style="margin-top: 20px;">Fechar</button>
     </div>
-    <div style="display:flex; gap:10px; margin-top:16px;">
-      <button class="btn btn-outline" onclick="closeCustomerLoginModal()" style="flex:1;">Cancelar</button>
-      <button class="btn btn-primary" onclick="performCustomerLogin()" style="flex:1;">🔑 Entrar</button>
-    </div>
-  </div>
-</div>
-
-<!-- NOVO: MODAL SUCESSO PROMOÇÃO -->
-<div class="modal-overlay" id="promoSuccessModal">
-  <div class="modal" style="text-align: center; padding: 32px 24px;">
-    <div class="modal-handle"></div>
-    <div style="font-size: 64px; margin-bottom: 16px;">🎉</div>
-    <div class="modal-title" style="color: var(--success);">Parabéns!</div>
-    <p style="font-size: 16px; color: var(--text); margin-bottom: 20px; line-height: 1.5;">
-      <strong id="promoSuccessClientName"></strong>, você atingiu a quantidade da promoção!
-    </p>
-    <div style="background: var(--bg); padding: 16px; border-radius: var(--radius); margin-bottom: 20px;">
-      <img id="promoSuccessImg" src="" alt="Produto" style="width: 80px; height: 80px; object-fit: cover; border-radius: 12px; margin-bottom: 12px;">
-      <div style="font-weight: 700; font-size: 18px; color: var(--primary);" id="promoSuccessProductName"></div>
-      <div style="font-size: 14px; color: var(--text-muted); margin-top: 4px;">
-        Quantidade atingida: <strong id="promoSuccessQty" style="color: var(--success);"></strong>
-      </div>
-    </div>
-    <button class="btn btn-primary" onclick="closePromoSuccessModal()">Entendido!</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- SOM DE SINO (Base64 curto para garantir funcionamento offline) -->
+<audio id="bellSound" preload="auto">
+  <source src="data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAADhAC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAA4T8v6UGAAAAAAAAAAAAAAAAAAAA//sQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
+</audio>
 
 <script>
   // ============ STATE ============
@@ -1563,29 +1507,28 @@
   let cart = [];
   let sales = JSON.parse(localStorage.getItem('pdv_sales') || '[]');
   let clients = JSON.parse(localStorage.getItem('pdv_clients') || '[]');
-  let promoProgress = JSON.parse(localStorage.getItem('pdv_promo_progress') || '{}'); // { clientId: { productId: count } }
-  
   let html5QrCode = null;
   let scanMode = 'cart';
   let currentImageData = null;
-  let currentClient = null; // Cliente selecionado no PDV
-  let currentLoggedInClient = null; // Cliente logado no portal
+  let currentClient = null;
+
+  // Migração de dados antigos para incluir campos novos
+  products.forEach(p => {
+    if (!('description' in p)) p.description = '';
+    if (!('promoActive' in p)) p.promoActive = false;
+    if (!('promoQuantity' in p)) p.promoQuantity = 0;
+  });
+  clients.forEach(c => {
+    if (!('promoProgress' in c)) c.promoProgress = {};
+  });
 
   // Seed inicial produtos
   if (products.length === 0) {
     products = [
-      { id: 1, name: 'Coca-Cola 350ml', code: '7891000100103', price: 5.50, stock: 50, category: 'bebidas', image: null, description: 'Refrigerante sabor cola, lata gelada', hasPromo: false, promoQty: 0 },
-      { id: 2, name: 'Pão Francês (un)', code: '0000000000001', price: 0.80, stock: 200, category: 'alimentos', image: null, description: 'Pão fresquinho', hasPromo: false, promoQty: 0 }
+      { id: 1, name: 'Coca-Cola 350ml', code: '7891000100103', price: 5.50, stock: 50, category: 'bebidas', image: null, description: 'Refrigerante sabor cola, lata gelada', promoActive: false, promoQuantity: 0 },
+      { id: 2, name: 'Pão Francês (un)', code: '0000000000001', price: 0.80, stock: 200, category: 'alimentos', image: null, description: 'Pão fresquinho', promoActive: false, promoQuantity: 0 }
     ];
     saveProducts();
-  } else {
-    let migrated = false;
-    products.forEach(p => {
-      if (!('description' in p)) { p.description = ''; migrated = true; }
-      if (!('hasPromo' in p)) { p.hasPromo = false; migrated = true; }
-      if (!('promoQty' in p)) { p.promoQty = 0; migrated = true; }
-    });
-    if (migrated) saveProducts();
   }
 
   // ============ NAVIGATION ============
@@ -1601,36 +1544,46 @@
       viewAdmin: 'Painel Administrativo',
       viewSales: 'Histórico de Vendas',
       viewClients: 'Cadastro de Clientes',
-      viewCustomerPortal: 'Minha Conta'
+      viewPromos: 'Promoções Ativas'
     };
-    document.getElementById('headerSub').textContent = titles[viewId] || 'PDV Smart';
+    document.getElementById('headerSub').textContent = titles[viewId];
 
     if (viewId === 'viewCatalog') renderCatalog();
     if (viewId === 'viewAdmin') renderProducts();
     if (viewId === 'viewSales') renderSales();
     if (viewId === 'viewClients') renderClients();
-    if (viewId === 'viewCustomerPortal') renderCustomerPortal();
+    if (viewId === 'viewPromos') renderPromos();
     if (viewId !== 'viewPDV') stopScanner();
   }
 
   function navigateTo(viewId) {
     closeMenu();
     const btn = document.querySelector(`[data-view="${viewId}"]`);
-    if (btn) switchView(viewId, btn);
-    else {
+    if (btn) {
+      switchView(viewId, btn);
+    } else {
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
       document.getElementById(viewId).classList.add('active');
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      const titles = { viewPDV: 'Sistema de Ponto de Venda', viewCatalog: 'Catálogo de Produtos', viewAdmin: 'Painel Administrativo', viewSales: 'Histórico de Vendas', viewClients: 'Cadastro de Clientes', viewPromos: 'Promoções Ativas' };
+      document.getElementById('headerSub').textContent = titles[viewId];
       if (viewId === 'viewAdmin') renderProducts();
       if (viewId === 'viewSales') renderSales();
       if (viewId === 'viewClients') renderClients();
+      if (viewId === 'viewPromos') renderPromos();
       if (viewId !== 'viewPDV') stopScanner();
     }
   }
 
   // ============ MENU ============
-  function openMenu() { document.getElementById('menuOverlay').classList.add('active'); document.getElementById('menuDrawer').classList.add('active'); }
-  function closeMenu() { document.getElementById('menuOverlay').classList.remove('active'); document.getElementById('menuDrawer').classList.remove('active'); }
+  function openMenu() {
+    document.getElementById('menuOverlay').classList.add('active');
+    document.getElementById('menuDrawer').classList.add('active');
+  }
+  function closeMenu() {
+    document.getElementById('menuOverlay').classList.remove('active');
+    document.getElementById('menuDrawer').classList.remove('active');
+  }
 
   // ============ TOAST ============
   function toast(msg, type = '') {
@@ -1645,7 +1598,10 @@
     if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
     try {
       const cameras = await Html5Qrcode.getCameras();
-      if (!cameras || cameras.length === 0) { toast('Nenhuma câmera encontrada', 'error'); return; }
+      if (!cameras || cameras.length === 0) {
+        toast('Nenhuma câmera encontrada', 'error');
+        return;
+      }
       const cam = cameras.find(c => /back|traseira|rear|environment/i.test(c.label)) || cameras[cameras.length - 1];
       await html5QrCode.start(
         cam.id,
@@ -1663,23 +1619,30 @@
       document.getElementById('btnStartScan').style.display = 'none';
       document.getElementById('btnStopScan').style.display = 'flex';
     } catch (err) {
+      console.error(err);
       toast('Erro ao acessar câmera: ' + err.message, 'error');
     }
   }
-
   function stopScanner() {
-    if (html5QrCode && html5QrCode.isScanning) html5QrCode.stop().catch(() => {});
-    document.getElementById('btnStartScan').style.display = 'flex';
-    document.getElementById('btnStopScan').style.display = 'none';
+    if (html5QrCode && html5QrCode.isScanning) {
+      html5QrCode.stop().catch(() => {});
+    }
+    const btnStart = document.getElementById('btnStartScan');
+    const btnStop = document.getElementById('btnStopScan');
+    if (btnStart) btnStart.style.display = 'flex';
+    if (btnStop) btnStop.style.display = 'none';
   }
-
   document.getElementById('btnStartScan').addEventListener('click', () => { scanMode = 'cart'; startScanner(); });
   document.getElementById('btnStopScan').addEventListener('click', stopScanner);
 
   // ============ IMAGE UPLOAD ============
   function handleImageUpload(event) {
     const file = event.target.files[0];
-    if (!file || !file.type.startsWith('image/')) { toast('Selecione uma imagem válida', 'error'); return; }
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast('Selecione um arquivo de imagem válido', 'error');
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (e) => {
       compressImage(e.target.result, 400, 0.75, (compressedData) => {
@@ -1689,21 +1652,25 @@
     };
     reader.readAsDataURL(file);
   }
-
   function compressImage(dataUrl, maxSize, quality, callback) {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement('canvas');
       let { width, height } = img;
-      if (width > height) { if (width > maxSize) { height = (height * maxSize) / width; width = maxSize; } }
-      else { if (height > maxSize) { width = (width * maxSize) / height; height = maxSize; } }
-      canvas.width = width; canvas.height = height;
-      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-      callback(canvas.toDataURL('image/jpeg', quality));
+      if (width > height) {
+        if (width > maxSize) { height = (height * maxSize) / width; width = maxSize; }
+      } else {
+        if (height > maxSize) { width = (width * maxSize) / height; height = maxSize; }
+      }
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      const compressed = canvas.toDataURL('image/jpeg', quality);
+      callback(compressed);
     };
     img.src = dataUrl;
   }
-
   function showImagePreview(src) {
     document.getElementById('imagePreview').src = src;
     document.getElementById('imagePreview').style.display = 'block';
@@ -1711,8 +1678,8 @@
     document.getElementById('imageActions').style.display = 'flex';
     document.getElementById('imageUploadBox').classList.add('has-image');
   }
-
   function clearImagePreview() {
+    document.getElementById('imagePreview').src = '';
     document.getElementById('imagePreview').style.display = 'none';
     document.getElementById('imagePlaceholder').style.display = 'flex';
     document.getElementById('imageActions').style.display = 'none';
@@ -1720,20 +1687,23 @@
     document.getElementById('productImage').value = '';
     currentImageData = null;
   }
-
   function removeImage(event) {
-    event.preventDefault(); event.stopPropagation();
-    clearImagePreview(); toast('Foto removida');
+    event.preventDefault();
+    event.stopPropagation();
+    clearImagePreview();
+    toast('Foto removida');
   }
 
+  // ============ DESCRIPTION COUNTER ============
   function updateDescCounter() {
     const textarea = document.getElementById('productDescription');
     const counter = document.getElementById('descCounter');
     const len = textarea.value.length;
-    counter.textContent = len + '/200';
+    const max = 200;
+    counter.textContent = len + '/' + max;
     counter.classList.remove('warn', 'danger');
-    if (len >= 200) counter.classList.add('danger');
-    else if (len >= 160) counter.classList.add('warn');
+    if (len >= max) counter.classList.add('danger');
+    else if (len >= max * 0.8) counter.classList.add('warn');
   }
 
   // ============ CART ============
@@ -1743,34 +1713,51 @@
     addToCart(code);
     document.getElementById('manualCode').value = '';
   }
-
   function addToCart(code) {
     const product = products.find(p => p.code === code);
-    if (!product) { toast('Produto não encontrado: ' + code, 'error'); return; }
-    if (product.stock <= 0) { toast('Produto sem estoque!', 'error'); return; }
-    
+    if (!product) {
+      toast('Produto não encontrado: ' + code, 'error');
+      return;
+    }
+    if (product.stock <= 0) {
+      toast('Produto sem estoque!', 'error');
+      return;
+    }
     const item = cart.find(c => c.id === product.id);
     if (item) {
-      if (item.qty >= product.stock) { toast('Estoque insuficiente!', 'error'); return; }
+      if (item.qty >= product.stock) {
+        toast('Estoque insuficiente!', 'error');
+        return;
+      }
       item.qty++;
     } else {
-      cart.push({ id: product.id, name: product.name, price: product.price, qty: 1, image: product.image || null, description: product.description || '' });
+      cart.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        qty: 1,
+        image: product.image || null,
+        description: product.description || ''
+      });
     }
     toast('✓ ' + product.name, 'success');
     renderCart();
   }
-
   function changeQty(id, delta) {
     const item = cart.find(c => c.id === id);
     if (!item) return;
     const product = products.find(p => p.id === id);
     const newQty = item.qty + delta;
-    if (newQty <= 0) cart = cart.filter(c => c.id !== id);
-    else if (newQty > product.stock) { toast('Estoque insuficiente!', 'error'); return; }
-    else item.qty = newQty;
+    if (newQty <= 0) {
+      cart = cart.filter(c => c.id !== id);
+    } else if (newQty > product.stock) {
+      toast('Estoque insuficiente!', 'error');
+      return;
+    } else {
+      item.qty = newQty;
+    }
     renderCart();
   }
-
   function renderCart() {
     const list = document.getElementById('cartList');
     if (cart.length === 0) {
@@ -1802,10 +1789,12 @@
     document.getElementById('cartCount').textContent = count + ' ' + (count === 1 ? 'item' : 'itens');
   }
 
-  // ============ FINALIZAR VENDA E PROMOÇÃO ============
+  // ============ FINALIZAR VENDA E LÓGICA DE PROMOÇÃO ============
   function finalizeSale() {
-    if (cart.length === 0) { toast('Carrinho vazio!', 'error'); return; }
-    
+    if (cart.length === 0) {
+      toast('Carrinho vazio!', 'error');
+      return;
+    }
     const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
     const sale = {
       id: Date.now(),
@@ -1814,33 +1803,45 @@
       date: new Date().toISOString(),
       client: currentClient ? { id: currentClient.id, name: currentClient.name, whatsapp: currentClient.whatsapp, delivery: currentClient.delivery, address: currentClient.address, neighborhood: currentClient.neighborhood } : null
     };
-
-    // Lógica de Promoção Acumulativa
-    if (currentClient) {
-      const clientId = String(currentClient.id);
-      if (!promoProgress[clientId]) promoProgress[clientId] = {};
-
-      cart.forEach(item => {
-        const product = products.find(p => p.id === item.id);
-        if (product && product.hasPromo && product.promoQty > 0) {
-          if (!promoProgress[clientId][item.id]) promoProgress[clientId][item.id] = 0;
-          promoProgress[clientId][item.id] += item.qty;
-
-          if (promoProgress[clientId][item.id] >= product.promoQty) {
-            // Atingiu a promoção!
-            playBellSound();
-            showPromoSuccessModal(currentClient.name, product, product.promoQty);
-            promoProgress[clientId][item.id] = 0; // Reinicia a contagem
-          }
-        }
-      });
-      localStorage.setItem('pdv_promo_progress', JSON.stringify(promoProgress));
-    }
-
+    
+    // Atualizar estoque
     cart.forEach(item => {
       const p = products.find(pr => pr.id === item.id);
       if (p) p.stock -= item.qty;
     });
+
+    // LÓGICA DE PROMOÇÃO ACUMULATIVA
+    if (currentClient) {
+      if (!currentClient.promoProgress) currentClient.promoProgress = {};
+      
+      cart.forEach(item => {
+        const product = products.find(p => p.id === item.id);
+        if (product && product.promoActive && product.promoQuantity > 0) {
+          let currentCount = currentClient.promoProgress[product.id] || 0;
+          let newTotal = currentCount + item.qty;
+          let wins = Math.floor(newTotal / product.promoQuantity);
+          let remainder = newTotal % product.promoQuantity;
+
+          if (wins > 0) {
+            // Tocar som de sino por ~3 segundos (repetindo o som curto)
+            playBellSound();
+            // Mostrar modal de vitória
+            showPromoWinModal(currentClient.name, product, product.promoQuantity);
+            // Excedente inicia novo ciclo
+            currentClient.promoProgress[product.id] = remainder;
+          } else {
+            currentClient.promoProgress[product.id] = newTotal;
+          }
+        }
+      });
+
+      // Atualizar cliente no array principal
+      const clientIndex = clients.findIndex(c => c.id === currentClient.id);
+      if (clientIndex !== -1) {
+        clients[clientIndex] = currentClient;
+      }
+      saveClients();
+    }
 
     sales.unshift(sale);
     localStorage.setItem('pdv_sales', JSON.stringify(sales));
@@ -1851,63 +1852,75 @@
     updateSelectedClientDisplay();
     renderCart();
     toast('✅ Venda finalizada! R$ ' + total.toFixed(2), 'success');
+    
     if (document.getElementById('viewCatalog').classList.contains('active')) renderCatalog();
   }
 
   function playBellSound() {
-    // Som de sino confiável (Google Actions)
-    const audio = new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg');
-    audio.loop = true;
-    audio.play().catch(e => console.log("Interação do usuário necessária para áudio"));
-    setTimeout(() => {
-      audio.pause();
-      audio.currentTime = 0;
-    }, 3000); // Toca por 3 segundos
-  }
-
-  function showPromoSuccessModal(clientName, product, qty) {
-    document.getElementById('promoSuccessClientName').textContent = clientName;
-    document.getElementById('promoSuccessProductName').textContent = product.name;
-    document.getElementById('promoSuccessQty').textContent = qty + ' unidades';
-    const imgEl = document.getElementById('promoSuccessImg');
-    if (product.image) {
-      imgEl.src = product.image;
-      imgEl.style.display = 'block';
-    } else {
-      imgEl.style.display = 'none';
+    const audio = document.getElementById('bellSound');
+    if (audio) {
+      let count = 0;
+      const interval = setInterval(() => {
+        audio.currentTime = 0;
+        audio.play().catch(e => console.log("Audio play failed", e));
+        count++;
+        if (count >= 6) { // ~3 segundos (0.5s * 6)
+          clearInterval(interval);
+        }
+      }, 500);
     }
-    document.getElementById('promoSuccessModal').classList.add('active');
   }
 
-  function closePromoSuccessModal() {
-    document.getElementById('promoSuccessModal').classList.remove('active');
+  function showPromoWinModal(clientName, product, requiredQty) {
+    const modal = document.getElementById('promoWinModal');
+    const imgContainer = document.getElementById('promoWinImageContainer');
+    document.getElementById('promoWinClientName').textContent = `Cliente: ${clientName}`;
+    document.getElementById('promoWinDesc').innerHTML = `Você completou <strong>${requiredQty} unidades</strong> de:<br><strong>${escapeHtml(product.name)}</strong>`;
+    
+    if (product.image) {
+      imgContainer.innerHTML = `<img src="${product.image}" class="promo-win-img" alt="${escapeHtml(product.name)}">`;
+    } else {
+      imgContainer.innerHTML = `<div class="promo-win-img-placeholder">📦</div>`;
+    }
+    
+    modal.classList.add('active');
   }
 
-  // ============ CLIENTE SELEÇÃO (PDV) ============
+  function closePromoWinModal() {
+    document.getElementById('promoWinModal').classList.remove('active');
+  }
+
+  // ============ CLIENTE SELEÇÃO ============
   function openClientSelectionModal() {
     document.getElementById('clientSelectionModal').classList.add('active');
     document.getElementById('searchClientSelection').value = '';
     renderClientSelectionList();
   }
-  function closeClientSelectionModal() { document.getElementById('clientSelectionModal').classList.remove('active'); }
-
+  function closeClientSelectionModal() {
+    document.getElementById('clientSelectionModal').classList.remove('active');
+  }
   function renderClientSelectionList() {
     const search = (document.getElementById('searchClientSelection').value || '').toLowerCase().trim();
     const filtered = clients.filter(c => c.name.toLowerCase().includes(search) || c.whatsapp.includes(search) || formatWhatsapp(c.whatsapp).includes(search));
     const list = document.getElementById('clientSelectionList');
-    
     if (filtered.length === 0) {
       list.innerHTML = '<div class="empty" style="padding: 20px;"><div class="empty-text">Nenhum cliente encontrado</div></div>';
     } else {
       list.innerHTML = filtered.map(c => {
         const initials = getInitials(c.name);
+        const whatsappFormatted = formatWhatsapp(c.whatsapp);
         const badgeHtml = c.delivery ? '<span class="client-badge" style="font-size:9px; padding: 1px 5px;">🏠 Domicílio</span>' : '';
         return `
-          <div class="client-item" style="cursor: pointer;" onclick="selectClientForSaleById(${c.id})">
+          <div class="client-item" style="cursor: pointer; transition: all 0.2s;" onclick="selectClientForSaleById(${c.id})">
             <div class="client-avatar" style="width: 40px; height: 40px; font-size: 16px;">${escapeHtml(initials)}</div>
             <div class="client-info">
-              <div class="client-name" style="font-size: 14px;">${escapeHtml(c.name)} ${badgeHtml}</div>
-              <div class="client-meta"><div class="client-meta-row">📱 +55 ${escapeHtml(formatWhatsapp(c.whatsapp))}</div></div>
+              <div class="client-name" style="font-size: 14px;">
+                ${escapeHtml(c.name)}
+                ${badgeHtml}
+              </div>
+              <div class="client-meta">
+                <div class="client-meta-row">📱 +55 ${escapeHtml(whatsappFormatted)}</div>
+              </div>
             </div>
             <div style="color: var(--primary); font-size: 20px;">✓</div>
           </div>
@@ -1915,150 +1928,124 @@
       }).join('');
     }
   }
-
   function selectClientForSaleById(id) {
-    currentClient = clients.find(c => c.id === id);
-    updateSelectedClientDisplay();
-    closeClientSelectionModal();
-    toast('Cliente selecionado: ' + currentClient.name, 'success');
+    const client = clients.find(c => c.id === id);
+    if (client) {
+      currentClient = client;
+      updateSelectedClientDisplay();
+      closeClientSelectionModal();
+      toast('Cliente selecionado: ' + client.name, 'success');
+    }
   }
-
   function clearSelectedClient() {
     currentClient = null;
     updateSelectedClientDisplay();
     closeClientSelectionModal();
     toast('Cliente removido da venda', 'success');
   }
-
   function updateSelectedClientDisplay() {
     const display = document.getElementById('selectedClientDisplay');
+    const nameEl = document.getElementById('selectedClientName');
+    const detailsEl = document.getElementById('selectedClientDetails');
     if (currentClient) {
       display.style.display = 'block';
-      document.getElementById('selectedClientName').textContent = currentClient.name;
-      let details = `📱 +55 ${formatWhatsapp(currentClient.whatsapp)}`;
-      if (currentClient.delivery && currentClient.address) details += ` • 📍 ${currentClient.address}${currentClient.neighborhood ? ', ' + currentClient.neighborhood : ''}`;
-      document.getElementById('selectedClientDetails').textContent = details;
+      nameEl.textContent = currentClient.name;
+      const whatsappFormatted = formatWhatsapp(currentClient.whatsapp);
+      let details = `📱 +55 ${whatsappFormatted}`;
+      if (currentClient.delivery && currentClient.address) {
+        details += ` • 📍 ${currentClient.address}${currentClient.neighborhood ? ', ' + currentClient.neighborhood : ''}`;
+      }
+      detailsEl.textContent = details;
     } else {
       display.style.display = 'none';
+      nameEl.textContent = '';
+      detailsEl.textContent = '';
     }
   }
 
-  // ============ LOGIN DO CLIENTE (NOVO) ============
-  function openCustomerLoginModal() {
-    closeMenu();
-    document.getElementById('customerLoginModal').classList.add('active');
-    document.getElementById('loginClientWhatsapp').value = '';
-  }
-  function closeCustomerLoginModal() { document.getElementById('customerLoginModal').classList.remove('active'); }
+  // ============ PROMOÇÕES ATIVAS (NOVO) ============
+  function renderPromos() {
+    const search = (document.getElementById('searchPromoClient').value || '').toLowerCase().trim();
+    const list = document.getElementById('promoClientList');
+    
+    // Filtrar clientes que têm progresso em algum produto com promoção ativa
+    const participatingClients = clients.filter(c => {
+      if (!c.promoProgress) return false;
+      const hasProgress = Object.keys(c.promoProgress).some(prodId => {
+        const prod = products.find(p => p.id === parseInt(prodId));
+        return prod && prod.promoActive && c.promoProgress[prodId] > 0;
+      });
+      return hasProgress && (c.name.toLowerCase().includes(search) || c.whatsapp.includes(search));
+    });
 
-  function performCustomerLogin() {
-    const whatsapp = document.getElementById('loginClientWhatsapp').value.replace(/\D/g, '');
-    if (whatsapp.length < 10 || whatsapp.length > 11) {
-      toast('Número de celular inválido!', 'error');
+    if (participatingClients.length === 0) {
+      list.innerHTML = '<div class="empty"><div class="empty-icon">🎁</div><div class="empty-text">Nenhum cliente participando de promoções no momento.</div></div>';
       return;
     }
-    
-    const client = clients.find(c => c.whatsapp === whatsapp);
-    if (!client) {
-      toast('Cliente não encontrado com este número.', 'error');
-      return;
-    }
 
-    currentLoggedInClient = client;
-    closeCustomerLoginModal();
-    switchView('viewCustomerPortal', null);
-    toast('Bem-vindo(a), ' + client.name + '!', 'success');
-  }
-
-  function logoutCustomer() {
-    currentLoggedInClient = null;
-    switchView('viewPDV', document.querySelector('[data-view="viewPDV"]'));
-  }
-
-  function renderCustomerPortal() {
-    if (!currentLoggedInClient) return;
-    const c = currentLoggedInClient;
-    
-    document.getElementById('portalClientName').textContent = c.name;
-    document.getElementById('portalClientPhone').textContent = '+55 ' + formatWhatsapp(c.whatsapp);
-    document.getElementById('portalClientAddress').textContent = (c.delivery && c.address) ? `${c.address}${c.neighborhood ? ' - ' + c.neighborhood : ''}` : 'Não informado';
-
-    // Renderizar Promoção Ativa
-    const promoList = document.getElementById('portalPromoList');
-    const clientId = String(c.id);
-    const activePromos = [];
-    
-    if (promoProgress[clientId]) {
-      for (const [prodId, count] of Object.entries(promoProgress[clientId])) {
-        if (count > 0) {
-          const product = products.find(p => p.id === parseInt(prodId));
-          if (product && product.hasPromo) {
-            activePromos.push({ product, count, target: product.promoQty });
-          }
+    list.innerHTML = participatingClients.map(c => {
+      const whatsappFormatted = formatWhatsapp(c.whatsapp);
+      const addressText = (c.delivery && c.address) ? `${c.address}${c.neighborhood ? ' - ' + c.neighborhood : ''}` : 'Não informado';
+      
+      // Encontrar produtos em promoção que este cliente está acumulando
+      let promoItemsHtml = '';
+      for (const [prodId, count] of Object.entries(c.promoProgress)) {
+        const prod = products.find(p => p.id === parseInt(prodId));
+        if (prod && prod.promoActive && count > 0) {
+          const imgHtml = prod.image ? `<img src="${prod.image}" style="width:40px; height:40px; border-radius:8px; object-fit:cover; margin-right:8px;">` : `<div style="width:40px; height:40px; border-radius:8px; background:var(--primary-light); color:var(--primary); display:flex; align-items:center; justify-content:center; margin-right:8px; font-size:20px;">📦</div>`;
+          promoItemsHtml += `
+            <div style="display:flex; align-items:center; background:var(--bg); padding:8px; border-radius:8px; margin-top:8px;">
+              ${imgHtml}
+              <div style="flex:1;">
+                <div style="font-size:13px; font-weight:600;">${escapeHtml(prod.name)}</div>
+                <div style="font-size:12px; color:var(--text-muted);">Progresso: <strong style="color:var(--primary);">${count}</strong> / ${prod.promoQuantity}</div>
+              </div>
+            </div>
+          `;
         }
       }
-    }
 
-    if (activePromos.length === 0) {
-      promoList.innerHTML = '<div class="empty" style="padding: 20px;"><div class="empty-text">Nenhuma promoção em andamento no momento.</div></div>';
-    } else {
-      promoList.innerHTML = activePromos.map(ap => {
-        const pct = Math.min(100, (ap.count / ap.target) * 100);
-        const imgHtml = ap.product.image ? `<img src="${ap.product.image}" class="promo-active-img">` : `<div class="promo-active-img" style="display:flex;align-items:center;justify-content:center;font-size:32px;">📦</div>`;
-        return `
-          <div class="promo-active-card">
-            ${imgHtml}
-            <div class="promo-active-info">
-              <div class="promo-active-title">${escapeHtml(ap.product.name)}</div>
-              <div class="promo-active-progress">${ap.count} de ${ap.target} comprados</div>
-              <div class="progress-bar-bg">
-                <div class="progress-bar-fill" style="width: ${pct}%"></div>
+      const waMsg = `Parabéns!\nVocê Comprou e Ganhou!!\nNós da Gordo Água estamos felizes em presentear você!!!`;
+      const waLink = `https://wa.me/55${c.whatsapp}?text=${encodeURIComponent(waMsg)}`;
+
+      return `
+        <div class="client-item" style="flex-direction: column; align-items: stretch;">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+            <div class="client-avatar" style="width:48px; height:48px; font-size:18px;">${getInitials(c.name)}</div>
+            <div style="flex:1;">
+              <div class="client-name">${escapeHtml(c.name)}</div>
+              <div class="client-meta">
+                <div class="client-meta-row">📱 +55 ${escapeHtml(whatsappFormatted)}</div>
+                <div class="client-meta-row">📍 ${escapeHtml(addressText)}</div>
               </div>
             </div>
           </div>
-        `;
-      }).join('');
-    }
-
-    // Renderizar Histórico de Compras
-    const clientSales = sales.filter(s => s.client && s.client.id === c.id);
-    const salesList = document.getElementById('portalSalesList');
-    if (clientSales.length === 0) {
-      salesList.innerHTML = '<div class="empty" style="padding: 20px;"><div class="empty-text">Nenhuma compra registrada ainda.</div></div>';
-    } else {
-      salesList.innerHTML = clientSales.map(s => {
-        const d = new Date(s.date);
-        const dateStr = d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-        const itemsChips = s.items.map(i => {
-          const imgPart = i.image ? `<img src="${i.image}" alt="">` : '';
-          return `<div class="sale-item-chip">${imgPart}<div class="sale-item-chip-text"><span class="sale-item-chip-name">${i.qty}× ${escapeHtml(i.name)}</span></div></div>`;
-        }).join('');
-        return `
-          <div class="sale-item">
-            <div class="sale-header">
-              <div><div class="sale-id">Nota #${String(s.id).slice(-6)}</div><div class="sale-date">${dateStr}</div></div>
-              <div class="sale-total">R$ ${s.total.toFixed(2)}</div>
-            </div>
-            <div class="sale-items-list">${itemsChips}</div>
+          
+          <div style="border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 4px;">
+            <div style="font-size:12px; font-weight:700; color:var(--primary); margin-bottom:4px;">🎁 Promoção Ativa:</div>
+            ${promoItemsHtml}
           </div>
-        `;
-      }).join('');
-    }
+
+          <button class="btn btn-success" style="margin-top: 12px; padding: 10px;" onclick="window.open('${waLink}', '_blank')">
+            📱 Enviar Mensagem no WhatsApp
+          </button>
+        </div>
+      `;
+    }).join('');
   }
 
   // ============ CATALOG ============
   function renderCatalog() {
     const search = document.getElementById('searchCatalog').value.toLowerCase().trim();
-    document.getElementById('clearCatalogSearch').classList.toggle('show', search.length > 0);
+    const clearBtn = document.getElementById('clearCatalogSearch');
+    clearBtn.classList.toggle('show', search.length > 0);
     const filtered = products.filter(p => p.name.toLowerCase().includes(search) || p.code.includes(search) || (p.description && p.description.toLowerCase().includes(search)) || p.category.toLowerCase().includes(search));
     const list = document.getElementById('catalogList');
-    document.getElementById('catalogCount').textContent = filtered.length + ' ' + (filtered.length === 1 ? 'produto' : 'produtos') + (search ? ' encontrado(s)' : ' no total');
-
+    document.getElementById('catalogCount').textContent = filtered.length + ' ' + (filtered.length === 1 ? 'produto' : 'produtos') + (search ? ' encontrado' + (filtered.length === 1 ? '' : 's') : ' no total');
     if (filtered.length === 0) {
-      list.innerHTML = `<div class="empty"><div class="empty-icon">${search ? '🔍' : '📖'}</div><div class="empty-text">${search ? 'Nenhum produto encontrado' : 'Nenhum produto cadastrado'}</div></div>`;
+      list.innerHTML = `<div class="empty"><div class="empty-icon">${search ? '🔍' : '📖'}</div><div class="empty-text">${search ? 'Nenhum produto encontrado para "' + escapeHtml(search) + '"' : 'Nenhum produto cadastrado ainda'}</div></div>`;
       return;
     }
-
     list.innerHTML = '<div class="catalog-grid">' + filtered.map(p => {
       const imgHtml = p.image ? `<img src="${p.image}" class="catalog-card-img" alt="${escapeHtml(p.name)}">` : `<div class="catalog-card-placeholder">📦</div>`;
       let stockLabel = '', stockClass = '';
@@ -2067,32 +2054,50 @@
       else { stockLabel = 'Est: ' + p.stock; }
       const descHtml = p.description ? `<div class="catalog-card-desc">${escapeHtml(p.description)}</div>` : '<div class="catalog-card-desc">&nbsp;</div>';
       const addDisabled = p.stock <= 0 ? 'disabled' : '';
+      const addTitle = p.stock <= 0 ? 'Produto esgotado' : 'Adicionar ao carrinho';
       return `
         <div class="catalog-card">
-          <div class="catalog-card-img-wrap">${imgHtml}<span class="catalog-card-stock ${stockClass}">${stockLabel}</span></div>
+          <div class="catalog-card-img-wrap">
+            ${imgHtml}
+            <span class="catalog-card-stock ${stockClass}">${stockLabel}</span>
+          </div>
           <div class="catalog-card-body">
             <div class="catalog-card-name">${escapeHtml(p.name)}</div>
             ${descHtml}
             <span class="catalog-card-category">${escapeHtml(p.category)}</span>
             <div class="catalog-card-footer">
               <div class="catalog-card-price">R$ ${p.price.toFixed(2)}</div>
-              <button class="catalog-card-add" onclick="addToCart('${p.code}')" ${addDisabled}>+</button>
+              <button class="catalog-card-add" onclick="addToCart('${p.code}')" ${addDisabled} title="${addTitle}">+</button>
             </div>
           </div>
         </div>
       `;
     }).join('') + '</div>';
   }
-  function clearCatalogSearch() { document.getElementById('searchCatalog').value = ''; renderCatalog(); document.getElementById('searchCatalog').focus(); }
+  function clearCatalogSearch() {
+    document.getElementById('searchCatalog').value = '';
+    renderCatalog();
+    document.getElementById('searchCatalog').focus();
+  }
 
   // ============ UTILS ============
-  function escapeHtml(str) { if (!str) return ''; const div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
-  function getInitials(name) { if (!name) return '?'; const parts = name.trim().split(/\s+/); return parts.length === 1 ? parts[0].charAt(0) : (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase(); }
+  function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+  function getInitials(name) {
+    if (!name) return '?';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].charAt(0);
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  }
   function formatWhatsapp(digits) {
     if (!digits) return '';
     const d = digits.replace(/\D/g, '');
     if (d.length === 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
-    if (d.length === 11) return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+    else if (d.length === 11) return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
     return d;
   }
 
@@ -2107,7 +2112,7 @@
       list.innerHTML = filtered.map(p => {
         const imgHtml = p.image ? `<img src="${p.image}" class="product-img" alt="${escapeHtml(p.name)}">` : `<div class="product-icon">📦</div>`;
         const descHtml = p.description ? `<div class="product-desc">${escapeHtml(p.description)}</div>` : '';
-        const promoBadge = p.hasPromo ? `<span style="font-size:10px; background:var(--warning); color:white; padding:2px 6px; border-radius:4px; margin-left:6px;">🎁 Promo: ${p.promoQty}x</span>` : '';
+        const promoBadge = p.promoActive ? `<span style="font-size:10px; background:var(--warning); color:white; padding:2px 6px; border-radius:4px; margin-left:6px;">🎁 Promo: ${p.promoQuantity}x</span>` : '';
         return `
           <div class="product-item">
             ${imgHtml}
@@ -2140,13 +2145,17 @@
     document.getElementById('productCategory').value = product ? product.category : 'geral';
     
     // Promoção
-    document.getElementById('productHasPromo').checked = product ? !!product.hasPromo : false;
-    document.getElementById('productPromoQty').value = product ? (product.promoQty || '') : '';
+    document.getElementById('productPromoActive').checked = product ? !!product.promoActive : false;
+    document.getElementById('productPromoQuantity').value = product ? product.promoQuantity : '';
     onPromoToggle();
-    updateDescCounter();
     
-    if (product && product.image) { currentImageData = product.image; showImagePreview(product.image); }
-    else { clearImagePreview(); }
+    updateDescCounter();
+    if (product && product.image) {
+      currentImageData = product.image;
+      showImagePreview(product.image);
+    } else {
+      clearImagePreview();
+    }
     document.getElementById('productModal').classList.add('active');
   }
 
@@ -2158,15 +2167,15 @@
   }
 
   function togglePromo() {
-    const cb = document.getElementById('productHasPromo');
+    const cb = document.getElementById('productPromoActive');
     cb.checked = !cb.checked;
     onPromoToggle();
   }
 
   function onPromoToggle() {
-    const checked = document.getElementById('productHasPromo').checked;
+    const checked = document.getElementById('productPromoActive').checked;
+    document.getElementById('promoQuantityGroup').style.display = checked ? 'block' : 'none';
     document.getElementById('promoToggleRow').classList.toggle('active', checked);
-    document.getElementById('promoQtyGroup').style.display = checked ? 'block' : 'none';
   }
 
   function saveProduct() {
@@ -2177,20 +2186,36 @@
     const price = parseFloat(document.getElementById('productPrice').value);
     const stock = parseInt(document.getElementById('productStock').value);
     const category = document.getElementById('productCategory').value;
-    const hasPromo = document.getElementById('productHasPromo').checked;
-    const promoQty = parseInt(document.getElementById('productPromoQty').value) || 0;
+    const promoActive = document.getElementById('productPromoActive').checked;
+    const promoQuantity = promoActive ? parseInt(document.getElementById('productPromoQuantity').value) : 0;
 
-    if (!name || !code || isNaN(price) || isNaN(stock)) { toast('Preencha todos os campos obrigatórios!', 'error'); return; }
-    if (hasPromo && promoQty < 1) { toast('Informe a quantidade para a promoção!', 'error'); return; }
+    if (!name || !code || isNaN(price) || isNaN(stock)) {
+      toast('Preencha todos os campos obrigatórios!', 'error');
+      return;
+    }
+    if (promoActive && (isNaN(promoQuantity) || promoQuantity <= 0)) {
+      toast('Informe a quantidade válida para a promoção!', 'error');
+      return;
+    }
 
     if (id) {
       const p = products.find(pr => pr.id === parseInt(id));
-      Object.assign(p, { name, description, code, price, stock, category, image: currentImageData, hasPromo, promoQty });
-      cart.forEach(item => { if (item.id === p.id) { Object.assign(item, { image: currentImageData, description, name, price }); } });
+      Object.assign(p, { name, description, code, price, stock, category, image: currentImageData, promoActive, promoQuantity });
+      cart.forEach(item => {
+        if (item.id === p.id) {
+          item.image = currentImageData;
+          item.description = description;
+          item.name = name;
+          item.price = price;
+        }
+      });
       toast('Produto atualizado!', 'success');
     } else {
-      if (products.some(p => p.code === code)) { toast('Código já cadastrado!', 'error'); return; }
-      products.push({ id: Date.now(), name, description, code, price, stock, category, image: currentImageData, hasPromo, promoQty });
+      if (products.some(p => p.code === code)) {
+        toast('Código já cadastrado!', 'error');
+        return;
+      }
+      products.push({ id: Date.now(), name, description, code, price, stock, category, image: currentImageData, promoActive, promoQuantity });
       toast('Produto cadastrado!', 'success');
     }
     saveProducts();
@@ -2199,51 +2224,63 @@
     closeProductModal();
   }
 
-  function editProduct(id) { const p = products.find(pr => pr.id === id); if (p) openProductModal(p); }
+  function editProduct(id) {
+    const p = products.find(pr => pr.id === id);
+    if (p) openProductModal(p);
+  }
+
   function deleteProduct(id) {
     if (!confirm('Deseja realmente excluir este produto?')) return;
     products = products.filter(p => p.id !== id);
-    saveProducts(); renderProducts();
+    saveProducts();
+    renderProducts();
     if (document.getElementById('viewCatalog').classList.contains('active')) renderCatalog();
     toast('Produto excluído', 'success');
   }
+
   function scanForProduct() {
     scanMode = 'product';
     switchView('viewPDV', document.querySelector('[data-view="viewPDV"]'));
     setTimeout(() => startScanner(), 300);
   }
+
   function saveProducts() {
-    try { localStorage.setItem('pdv_products', JSON.stringify(products)); }
-    catch (e) { toast('Armazenamento cheio! Remova fotos.', 'error'); }
+    try {
+      localStorage.setItem('pdv_products', JSON.stringify(products));
+    } catch (e) {
+      toast('Armazenamento cheio! Remova fotos de alguns produtos.', 'error');
+      console.error(e);
+    }
   }
 
-  // ============ CLIENTES (Cadastro) ============
+  // ============ CLIENTES ============
   function renderClients() {
     const search = (document.getElementById('searchClient').value || '').toLowerCase().trim();
-    document.getElementById('clearClientSearch').classList.toggle('show', search.length > 0);
+    const clearBtn = document.getElementById('clearClientSearch');
+    if (clearBtn) clearBtn.classList.toggle('show', search.length > 0);
     const filtered = clients.filter(c => c.name.toLowerCase().includes(search) || c.whatsapp.includes(search) || formatWhatsapp(c.whatsapp).includes(search) || (c.neighborhood && c.neighborhood.toLowerCase().includes(search)));
     const list = document.getElementById('clientList');
-    
     if (filtered.length === 0) {
-      list.innerHTML = `<div class="empty"><div class="empty-icon">${search ? '🔍' : '👥'}</div><div class="empty-text">${search ? 'Nenhum cliente encontrado' : 'Nenhum cliente cadastrado'}</div></div>`;
+      list.innerHTML = `<div class="empty"><div class="empty-icon">${search ? '🔍' : '👥'}</div><div class="empty-text">${search ? 'Nenhum cliente encontrado para "' + escapeHtml(search) + '"' : 'Nenhum cliente cadastrado ainda'}</div></div>`;
     } else {
       list.innerHTML = filtered.map(c => {
         const initials = getInitials(c.name);
+        const whatsappFormatted = formatWhatsapp(c.whatsapp);
         const badgeHtml = c.delivery ? '<span class="client-badge">🏠 Domicílio</span>' : '';
         const addressHtml = c.delivery && c.address ? `<div class="client-meta-row">📍 ${escapeHtml(c.address)}${c.neighborhood ? ' - ' + escapeHtml(c.neighborhood) : ''}</div>` : '';
         return `
           <div class="client-item">
             <div class="client-avatar">${escapeHtml(initials)}</div>
             <div class="client-info">
-              <div class="client-name">${escapeHtml(c.name)} ${badgeHtml}</div>
+              <div class="client-name">${escapeHtml(c.name)}${badgeHtml}</div>
               <div class="client-meta">
-                <div class="client-meta-row">📱 +55 ${escapeHtml(formatWhatsapp(c.whatsapp))}</div>
+                <div class="client-meta-row">📱 +55 ${escapeHtml(whatsappFormatted)}</div>
                 ${addressHtml}
               </div>
             </div>
             <div class="client-actions">
-              <button class="icon-btn edit" onclick="editClient(${c.id})">✏️</button>
-              <button class="icon-btn delete" onclick="deleteClient(${c.id})">🗑️</button>
+              <button class="icon-btn edit" onclick="editClient(${c.id})" title="Editar">✏️</button>
+              <button class="icon-btn delete" onclick="deleteClient(${c.id})" title="Excluir">🗑️</button>
             </div>
           </div>
         `;
@@ -2252,7 +2289,12 @@
     document.getElementById('statClients').textContent = clients.length;
     document.getElementById('statDelivery').textContent = clients.filter(c => c.delivery).length;
   }
-  function clearClientSearch() { document.getElementById('searchClient').value = ''; renderClients(); document.getElementById('searchClient').focus(); }
+
+  function clearClientSearch() {
+    document.getElementById('searchClient').value = '';
+    renderClients();
+    document.getElementById('searchClient').focus();
+  }
 
   function openClientModal(client = null) {
     document.getElementById('clientModalTitle').textContent = client ? 'Editar Cliente' : 'Novo Cliente';
@@ -2265,21 +2307,29 @@
     onDeliveryToggle();
     document.getElementById('clientModal').classList.add('active');
   }
+
   function closeClientModal() {
     document.getElementById('clientModal').classList.remove('active');
-    ['clientName', 'clientWhatsapp', 'clientAddress', 'clientNeighborhood'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('clientName').value = '';
+    document.getElementById('clientWhatsapp').value = '';
+    document.getElementById('clientAddress').value = '';
+    document.getElementById('clientNeighborhood').value = '';
     document.getElementById('clientDelivery').checked = false;
     onDeliveryToggle();
   }
+
   function toggleDelivery() {
     const cb = document.getElementById('clientDelivery');
     cb.checked = !cb.checked;
     onDeliveryToggle();
   }
+
   function onDeliveryToggle() {
     const checked = document.getElementById('clientDelivery').checked;
-    document.getElementById('deliveryToggleRow').classList.toggle('active', checked);
-    document.getElementById('addressFields').classList.toggle('show', checked);
+    const row = document.getElementById('deliveryToggleRow');
+    const fields = document.getElementById('addressFields');
+    row.classList.toggle('active', checked);
+    fields.classList.toggle('show', checked);
   }
 
   function saveClient() {
@@ -2291,33 +2341,52 @@
     const neighborhood = document.getElementById('clientNeighborhood').value.trim();
 
     if (!name) { toast('Informe o nome do cliente!', 'error'); return; }
-    if (whatsapp.length < 10 || whatsapp.length > 11) { toast('WhatsApp inválido! (10 ou 11 dígitos)', 'error'); return; }
-    if (delivery && (!address || !neighborhood)) { toast('Preencha endereço e bairro!', 'error'); return; }
-    if (clients.find(c => c.whatsapp === whatsapp && String(c.id) !== String(id))) { toast('Já existe cliente com este WhatsApp!', 'error'); return; }
+    if (whatsapp.length < 10 || whatsapp.length > 11) { toast('WhatsApp inválido! Digite DDD + número (10 ou 11 dígitos)', 'error'); return; }
+    if (delivery && (!address || !neighborhood)) { toast('Preencha endereço e bairro para entrega a domicílio!', 'error'); return; }
+
+    const duplicate = clients.find(c => c.whatsapp === whatsapp && String(c.id) !== String(id));
+    if (duplicate) { toast('Já existe cliente com este WhatsApp!', 'error'); return; }
 
     if (id) {
-      Object.assign(clients.find(cl => cl.id === parseInt(id)), { name, whatsapp, delivery, address, neighborhood });
+      const c = clients.find(cl => cl.id === parseInt(id));
+      Object.assign(c, { name, whatsapp, delivery, address, neighborhood });
       toast('Cliente atualizado!', 'success');
     } else {
-      clients.push({ id: Date.now(), name, whatsapp, delivery, address: delivery ? address : '', neighborhood: delivery ? neighborhood : '', createdAt: new Date().toISOString() });
+      clients.push({ id: Date.now(), name, whatsapp, delivery, address: delivery ? address : '', neighborhood: delivery ? neighborhood : '', createdAt: new Date().toISOString(), promoProgress: {} });
       toast('Cliente cadastrado!', 'success');
     }
-    saveClients(); renderClients(); closeClientModal();
+    saveClients();
+    renderClients();
+    closeClientModal();
   }
 
-  function editClient(id) { const c = clients.find(cl => cl.id === id); if (c) openClientModal(c); }
+  function editClient(id) {
+    const c = clients.find(cl => cl.id === id);
+    if (c) openClientModal(c);
+  }
+
   function deleteClient(id) {
     if (!confirm('Deseja realmente excluir este cliente?')) return;
     clients = clients.filter(c => c.id !== id);
-    saveClients(); renderClients(); toast('Cliente excluído', 'success');
-  }
-  function saveClients() {
-    try { localStorage.setItem('pdv_clients', JSON.stringify(clients)); }
-    catch (e) { toast('Erro ao salvar clientes', 'error'); }
+    saveClients();
+    renderClients();
+    toast('Cliente excluído', 'success');
   }
 
-  document.getElementById('clientWhatsapp').addEventListener('input', (e) => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11); });
-  document.getElementById('loginClientWhatsapp').addEventListener('input', (e) => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11); });
+  function saveClients() {
+    try {
+      localStorage.setItem('pdv_clients', JSON.stringify(clients));
+    } catch (e) {
+      toast('Erro ao salvar clientes', 'error');
+      console.error(e);
+    }
+  }
+
+  document.getElementById('clientWhatsapp').addEventListener('input', (e) => {
+    const input = e.target;
+    const digits = input.value.replace(/\D/g, '').slice(0, 11);
+    input.value = digits;
+  });
 
   // ============ SALES ============
   function renderSales() {
@@ -2333,7 +2402,6 @@
           const descPart = i.description ? `<span class="sale-item-chip-desc">${escapeHtml(i.description)}</span>` : '';
           return `<div class="sale-item-chip">${imgPart}<div class="sale-item-chip-text"><span class="sale-item-chip-name">${i.qty}× ${escapeHtml(i.name)}</span>${descPart}</div></div>`;
         }).join('');
-        
         const clientHtml = s.client ? `
           <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border);">
             <div style="font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 4px;">👤 Cliente: ${escapeHtml(s.client.name)}</div>
@@ -2342,19 +2410,22 @@
               ${s.client.delivery && s.client.address ? `<br>📍 ${escapeHtml(s.client.address)}${s.client.neighborhood ? ' - ' + escapeHtml(s.client.neighborhood) : ''}` : ''}
             </div>
           </div>
-        ` : '<div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 11px; color: var(--text-muted);">👤 Consumidor Final</div>';
-
+        ` : '<div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 11px; color: var(--text-muted);">👤 Cliente: Não informado (Consumidor Final)</div>';
         return `<div class="sale-item"><div class="sale-header"><div><div class="sale-id">Venda #${String(s.id).slice(-6)}</div><div class="sale-date">${dateStr}</div></div><div class="sale-total">R$ ${s.total.toFixed(2)}</div></div><div class="sale-items-list">${itemsChips}</div>${clientHtml}</div>`;
       }).join('');
     }
     document.getElementById('statSales').textContent = sales.length;
-    document.getElementById('statRevenue').textContent = 'R$ ' + sales.reduce((s, sale) => s + sale.total, 0).toFixed(0);
+    const revenue = sales.reduce((s, sale) => s + sale.total, 0);
+    document.getElementById('statRevenue').textContent = 'R$ ' + revenue.toFixed(0);
   }
 
-  // ============ EVENT LISTENERS ============
-  ['productModal', 'clientModal', 'clientSelectionModal', 'customerLoginModal', 'promoSuccessModal'].forEach(id => {
-    document.getElementById(id).addEventListener('click', (e) => { if (e.target.id === id) document.getElementById(id).classList.remove('active'); });
-  });
+  // Close modal on overlay click
+  document.getElementById('productModal').addEventListener('click', (e) => { if (e.target.id === 'productModal') closeProductModal(); });
+  document.getElementById('clientModal').addEventListener('click', (e) => { if (e.target.id === 'clientModal') closeClientModal(); });
+  document.getElementById('clientSelectionModal').addEventListener('click', (e) => { if (e.target.id === 'clientSelectionModal') closeClientSelectionModal(); });
+  document.getElementById('promoWinModal').addEventListener('click', (e) => { if (e.target.id === 'promoWinModal') closePromoWinModal(); });
+
+  // Enter to add by code
   document.getElementById('manualCode').addEventListener('keypress', (e) => { if (e.key === 'Enter') addByCode(); });
 
   // Init

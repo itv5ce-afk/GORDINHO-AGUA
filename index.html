@@ -72,21 +72,9 @@
     .phone-frame::-webkit-scrollbar { width: 0; }
   }
 
-  /* STATUS BAR */
+  /* STATUS BAR (OCULTADO CONFORME SOLICITADO) */
   .status-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 24px 8px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-white);
-  }
-  .status-bar-icons {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
+    display: none;
   }
 
   /* HOME VIEW */
@@ -923,7 +911,7 @@
 
 <div class="phone-frame">
 
-  <!-- STATUS BAR -->
+  <!-- STATUS BAR (OCULTADO VIA CSS) -->
   <div class="status-bar">
     <span id="statusTime">10:24</span>
     <div class="status-bar-icons">
@@ -1008,30 +996,15 @@
     </div>
   </div>
 
-  <!-- INNER VIEW: PDV -->
+  <!-- INNER VIEW: PDV (REORDENADO CONFORME SOLICITADO) -->
   <div class="inner-view" id="viewPDV">
     <div class="inner-header">
       <button class="back-btn" onclick="goHome()">←</button>
       <span class="inner-title">PDV - Ponto de Venda</span>
     </div>
     <div class="inner-content">
-      <div class="card">
-        <div class="card-title">📷 Scanner de Código de Barras</div>
-        <div id="reader"></div>
-        <div style="display:flex; gap:8px; margin-top:12px;">
-          <button class="btn btn-primary" id="btnStartScan" style="flex:1;">▶ Iniciar Câmera</button>
-          <button class="btn btn-dark" id="btnStopScan" style="flex:1; display:none;">⏸ Parar</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">⌨️ Ou digite o código</div>
-        <div style="display:flex; gap:8px;">
-          <input type="text" id="manualCode" placeholder="Código de barras..." inputmode="numeric">
-          <button class="btn btn-primary btn-sm" onclick="addByCode()">+</button>
-        </div>
-      </div>
-
+      
+      <!-- 1. Cliente da Venda -->
       <div class="card">
         <div class="card-title">👤 Cliente da Venda</div>
         <div id="selectedClientDisplay" style="display:none; padding: 12px; background: rgba(245,166,35,0.1); border-radius: var(--radius-sm); margin-bottom: 12px; border: 1.5px solid var(--accent-orange);">
@@ -1041,18 +1014,41 @@
         <button class="btn btn-outline" onclick="openClientSelectionModal()">👤 Selecionar ou Buscar Cliente</button>
       </div>
 
+      <!-- 2. Carrinho -->
       <div class="card">
         <div class="card-title">🛍️ Carrinho</div>
         <div id="cartList"></div>
       </div>
 
+      <!-- 3. Total -->
       <div class="total-box">
         <div class="total-label">Total a pagar</div>
         <div class="total-value" id="cartTotal">R$ 0,00</div>
         <div class="total-items" id="cartCount">0 itens</div>
       </div>
 
+      <!-- 4. Finalizar Venda -->
       <button class="btn btn-success" onclick="finalizeSale()">✅ Finalizar Venda</button>
+
+      <!-- 5. Código de Barras (Input) -->
+      <div class="card">
+        <div class="card-title">⌨️ Ou digite o código</div>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="manualCode" placeholder="Código de barras..." inputmode="numeric">
+          <button class="btn btn-primary btn-sm" onclick="addByCode()">+</button>
+        </div>
+      </div>
+
+      <!-- 6. Scanner de Código de Barras -->
+      <div class="card">
+        <div class="card-title">📷 Scanner de Código de Barras</div>
+        <div id="reader"></div>
+        <div style="display:flex; gap:8px; margin-top:12px;">
+          <button class="btn btn-primary" id="btnStartScan" style="flex:1;">▶ Iniciar Câmera</button>
+          <button class="btn btn-dark" id="btnStopScan" style="flex:1; display:none;">⏸ Parar</button>
+        </div>
+      </div>
+
     </div>
   </div>
 

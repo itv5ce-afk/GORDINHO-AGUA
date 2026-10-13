@@ -984,6 +984,14 @@
   }
   .sales-actions .btn { flex: 1; }
 
+  /* PROMO ACTIONS ROW */
+  .promo-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .promo-actions .btn { flex: 1; }
+
   /* PROMO WIN MODAL */
   .promo-win-content { text-align: center; padding: 10px 0; }
   .promo-win-img {
@@ -1237,7 +1245,7 @@
           <div class="stat-label">Faturamento</div>
         </div>
       </div>
-      <!-- NOVO: BOTÃO DELETAR VENDAS -->
+      <!-- BOTÃO DELETAR VENDAS -->
       <div class="sales-actions">
         <button class="btn btn-danger" onclick="deleteAllSales()">🗑️ Deletar Todas as Vendas</button>
       </div>
@@ -1279,6 +1287,10 @@
       <span class="inner-title">Promoção Ativa</span>
     </div>
     <div class="inner-content">
+      <!-- NOVO: BOTÃO DELETAR VENDA PROMOCIONAL (TODAS) -->
+      <div class="promo-actions">
+        <button class="btn btn-danger" onclick="deleteAllPromoSales()">🗑️ Deletar Todas as Vendas</button>
+      </div>
       <div class="card">
         <div class="card-title">🎁 Clientes Participando</div>
         <div class="search-box">
@@ -2055,8 +2067,32 @@
       const waMsg = `Parabéns!\nVocê Comprou e Ganhou!!\nNós da Gordo Express estamos felizes em presentear você!!!`;
       const waLink = c.whatsapp ? `https://wa.me/55${c.whatsapp}?text=${encodeURIComponent(waMsg)}` : '#';
       const waButton = c.whatsapp ? `<button class="btn btn-success" style="margin-top: 12px; padding: 10px;" onclick="window.open('${waLink}', '_blank')"> Enviar Mensagem no WhatsApp</button>` : '<button class="btn btn-dark" style="margin-top: 12px; padding: 10px;" disabled>WhatsApp não informado</button>';
-      return `<div class="client-item" style="flex-direction: column; align-items: stretch;"><div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><div class="client-avatar" style="width:48px; height:48px; font-size:18px;">${getInitials(c.name)}</div><div style="flex:1;"><div class="client-name">${escapeHtml(c.name)}</div><div class="client-meta"><div class="client-meta-row">${whatsappHtml}</div><div class="client-meta-row">📍 ${escapeHtml(addressText)}</div></div></div></div><div style="border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 4px;"><div style="font-size:12px; font-weight:700; color:var(--accent-orange); margin-bottom:4px;">🎁 Promoção Ativa:</div>${promoItemsHtml}</div>${waButton}</div>`;
+      // NOVO: Botão Deletar Venda (progresso da promoção deste cliente)
+      const deleteBtn = `<button class="btn btn-danger" style="margin-top: 8px; padding: 10px;" onclick="deletePromoSale(${c.id})">🗑️ Deletar Venda</button>`;
+      return `<div class="client-item" style="flex-direction: column; align-items: stretch;"><div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><div class="client-avatar" style="width:48px; height:48px; font-size:18px;">${getInitials(c.name)}</div><div style="flex:1;"><div class="client-name">${escapeHtml(c.name)}</div><div class="client-meta"><div class="client-meta-row">${whatsappHtml}</div><div class="client-meta-row">📍 ${escapeHtml(addressText)}</div></div></div></div><div style="border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 4px;"><div style="font-size:12px; font-weight:700; color:var(--accent-orange); margin-bottom:4px;">🎁 Promoção Ativa:</div>${promoItemsHtml}</div>${waButton}${deleteBtn}</div>`;
     }).join('');
+  }
+
+  // NOVO: DELETAR VENDA (PROGRESSO) DE UM CLIENTE NA PROMOÇÃO
+  function deletePromoSale(clientId) {
+    if (!confirm('Deseja realmente deletar as vendas promocionais deste cliente? O progresso será zerado.')) return;
+    const client = clients.find(c => c.id === clientId);
+    if (!client) { toast('Cliente não encontrado', 'error'); return; }
+    client.promoProgress = {};
+    saveClients();
+    renderPromos();
+    toast('Vendas promocionais deletadas!', 'success');
+  }
+
+  // NOVO: DELETAR TODAS AS VENDAS PROMOCIONAIS
+  function deleteAllPromoSales() {
+    const hasAny = clients.some(c => c.promoProgress && Object.values(c.promoProgress).some(v => v > 0));
+    if (!hasAny) { toast('Nenhuma venda promocional para deletar', 'error'); return; }
+    if (!confirm('Deseja realmente deletar TODAS as vendas promocionais? O progresso de todos os clientes será zerado.')) return;
+    clients.forEach(c => { c.promoProgress = {}; });
+    saveClients();
+    renderPromos();
+    toast('Todas as vendas promocionais foram deletadas!', 'success');
   }
 
   // ============ CATALOG ============
@@ -2255,7 +2291,7 @@
     document.getElementById('statRevenue').textContent = 'R$ ' + revenue.toFixed(0);
   }
 
-  // NOVO: DELETAR UMA VENDA INDIVIDUAL
+  // DELETAR UMA VENDA INDIVIDUAL
   function deleteSale(id) {
     if (!confirm('Deseja realmente excluir esta venda? Esta ação não pode ser desfeita.')) return;
     sales = sales.filter(s => s.id !== id);
@@ -2264,7 +2300,7 @@
     toast('Venda excluída!', 'success');
   }
 
-  // NOVO: DELETAR TODAS AS VENDAS
+  // DELETAR TODAS AS VENDAS
   function deleteAllSales() {
     if (sales.length === 0) { toast('Nenhuma venda para excluir', 'error'); return; }
     if (!confirm('Deseja realmente apagar TODAS as vendas? Esta ação não pode ser desfeita.')) return;

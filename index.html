@@ -448,6 +448,20 @@
     border: 1px solid var(--border);
   }
 
+  /* ============ NOVO: BOTÃO FINALIZAR VENDA COM 3CM DE ALTURA ============ */
+  .btn-finalizar-venda {
+    height: 3cm;
+    min-height: 3cm;
+    padding: 0 14px;
+    font-size: 17px;
+    letter-spacing: 0.6px;
+  }
+  @media (max-width: 360px) {
+    .btn-finalizar-venda {
+      font-size: 15px;
+    }
+  }
+
   /* IMAGE UPLOAD */
   .image-upload {
     display: flex;
@@ -960,9 +974,7 @@
     background: var(--bg-card); border: 1px solid var(--border);
     padding: 14px; border-radius: var(--radius-sm); margin-bottom: 8px;
   }
-  .sale-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; }
-  .sale-header-left { flex: 1; min-width: 0; }
-  .sale-header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .sale-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .sale-id { font-weight: 700; font-size: 13px; color: var(--accent-orange); }
   .sale-date { font-size: 12px; color: var(--text-muted); }
   .sale-total { font-size: 18px; font-weight: 800; color: var(--success); }
@@ -976,21 +988,45 @@
   .sale-item-chip-name { font-weight: 600; color: var(--text-white); }
   .sale-item-chip-desc { font-size: 10px; color: var(--text-muted); font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
 
-  /* SALES ACTIONS ROW */
-  .sales-actions {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 14px;
+  /* ============ NOVO: BOTÃO DELETAR EM MODO BUSCA ============ */
+  .delete-inline-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 34px;
+    padding: 0 10px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(239,68,68,0.2);
+    color: var(--danger);
+    font-size: 12px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    animation: fadeIn 0.25s ease;
   }
-  .sales-actions .btn { flex: 1; }
+  .delete-inline-btn:active { transform: scale(0.94); background: rgba(239,68,68,0.35); }
+  .delete-inline-btn:hover { background: rgba(239,68,68,0.35); }
 
-  /* PROMO ACTIONS ROW */
-  .promo-actions {
+  .sale-total-wrap { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+  .delete-hint {
     display: flex;
-    gap: 10px;
-    margin-bottom: 14px;
+    align-items: center;
+    gap: 8px;
+    background: rgba(239,68,68,0.12);
+    border: 1px dashed rgba(239,68,68,0.5);
+    color: var(--danger);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+    animation: fadeIn 0.25s ease;
   }
-  .promo-actions .btn { flex: 1; }
 
   /* PROMO WIN MODAL */
   .promo-win-content { text-align: center; padding: 10px 0; }
@@ -1110,8 +1146,17 @@
       <span class="inner-title">Gordo Express - PDV</span>
     </div>
     <div class="inner-content">
-      
-      <!-- 1. Cliente da Venda -->
+
+      <!-- 1. Código de Barras (Input) - AGORA NO TOPO -->
+      <div class="card">
+        <div class="card-title">⌨️ Ou digite o código</div>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="manualCode" placeholder="Código de barras..." inputmode="numeric">
+          <button class="btn btn-primary btn-sm" onclick="addByCode()">+</button>
+        </div>
+      </div>
+
+      <!-- 2. Cliente da Venda -->
       <div class="card">
         <div class="card-title">👤 Cliente da Venda</div>
         <div id="selectedClientDisplay" style="display:none; padding: 12px; background: rgba(245,166,35,0.1); border-radius: var(--radius-sm); margin-bottom: 12px; border: 1.5px solid var(--accent-orange);">
@@ -1121,20 +1166,20 @@
         <button class="btn btn-outline" onclick="openClientSelectionModal()">👤 Selecionar ou Buscar Cliente</button>
       </div>
 
-      <!-- 2. Carrinho -->
+      <!-- 3. Carrinho -->
       <div class="card">
         <div class="card-title">🛍️ Carrinho</div>
         <div id="cartList"></div>
       </div>
 
-      <!-- 3. Total -->
+      <!-- 4. Total -->
       <div class="total-box">
         <div class="total-label">Total a pagar</div>
         <div class="total-value" id="cartTotal">R$ 0,00</div>
         <div class="total-items" id="cartCount">0 itens</div>
       </div>
 
-      <!-- NOVO: MÉTODOS DE PAGAMENTO -->
+      <!-- 5. Métodos de Pagamento -->
       <div class="payment-methods">
         <button class="pay-btn cash" onclick="openCashModal()">
           <span class="pay-icon">💵</span>
@@ -1150,20 +1195,11 @@
         </button>
       </div>
 
-      <!-- 4. Finalizar Venda -->
-      <button class="btn btn-success" onclick="finalizeSale()">✅ Finalizar Venda</button>
+      <!-- 6. Finalizar Venda - BOTÃO COM 3CM DE ALTURA -->
+      <button class="btn btn-success btn-finalizar-venda" onclick="finalizeSale()">✅ Finalizar Venda</button>
 
-      <!-- 5. Código de Barras (Input) -->
-      <div class="card">
-        <div class="card-title">⌨️ Ou digite o código</div>
-        <div style="display:flex; gap:8px;">
-          <input type="text" id="manualCode" placeholder="Código de barras..." inputmode="numeric">
-          <button class="btn btn-primary btn-sm" onclick="addByCode()">+</button>
-        </div>
-      </div>
-
-      <!-- 6. Scanner de Código de Barras -->
-      <div class="card">
+      <!-- 7. Scanner de Código de Barras - AGORA ABAIXO DE FINALIZAR VENDA -->
+      <div class="card" style="margin-top: 14px;">
         <div class="card-title">📷 Scanner de Código de Barras</div>
         <div id="reader"></div>
         <div style="display:flex; gap:8px; margin-top:12px;">
@@ -1245,10 +1281,14 @@
           <div class="stat-label">Faturamento</div>
         </div>
       </div>
-      <!-- BOTÃO DELETAR VENDAS -->
-      <div class="sales-actions">
-        <button class="btn btn-danger" onclick="deleteAllSales()">🗑️ Deletar Todas as Vendas</button>
+
+      <!-- NOVO: BUSCA DE VENDAS -->
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchSale" placeholder="Buscar venda... (digite Deletar)" oninput="renderSales()">
+        <button class="search-clear" id="clearSaleSearch" onclick="clearSaleSearch()">✕</button>
       </div>
+
       <div id="salesList"></div>
     </div>
   </div>
@@ -1287,15 +1327,12 @@
       <span class="inner-title">Promoção Ativa</span>
     </div>
     <div class="inner-content">
-      <!-- NOVO: BOTÃO DELETAR VENDA PROMOCIONAL (TODAS) -->
-      <div class="promo-actions">
-        <button class="btn btn-danger" onclick="deleteAllPromoSales()">🗑️ Deletar Todas as Vendas</button>
-      </div>
       <div class="card">
         <div class="card-title">🎁 Clientes Participando</div>
         <div class="search-box">
           <span class="search-icon">🔍</span>
-          <input type="text" id="searchPromoClient" placeholder="Buscar cliente..." oninput="renderPromos()">
+          <input type="text" id="searchPromoClient" placeholder="Buscar cliente... (digite Deletar)" oninput="renderPromos()">
+          <button class="search-clear" id="clearPromoSearch" onclick="clearPromoSearch()">✕</button>
         </div>
         <div id="promoClientList"></div>
       </div>
@@ -2038,21 +2075,42 @@
 
   // ============ PROMOÇÕES ============
   function renderPromos() {
-    const search = (document.getElementById('searchPromoClient').value || '').toLowerCase().trim();
+    const searchInput = document.getElementById('searchPromoClient');
+    const rawSearch = searchInput ? searchInput.value : '';
+    const search = rawSearch.toLowerCase().trim();
+    const clearBtn = document.getElementById('clearPromoSearch');
+    if (clearBtn) clearBtn.classList.toggle('show', rawSearch.length > 0);
+
+    // NOVO: modo deletar ao digitar "Deletar"
+    const deleteMode = search.includes('deletar');
+
     const list = document.getElementById('promoClientList');
-    const participatingClients = clients.filter(c => {
+    let participatingClients = clients.filter(c => {
       if (!c.promoProgress) return false;
       const hasProgress = Object.keys(c.promoProgress).some(prodId => {
         const prod = products.find(p => p.id === parseInt(prodId));
         return prod && prod.promoActive && c.promoProgress[prodId] > 0;
       });
-      return hasProgress && (c.name.toLowerCase().includes(search) || c.whatsapp.includes(search));
+      return hasProgress;
     });
+
+    if (!deleteMode && search) {
+      participatingClients = participatingClients.filter(c =>
+        c.name.toLowerCase().includes(search) || (c.whatsapp && c.whatsapp.includes(search))
+      );
+    }
+
+    let hintHtml = '';
+    if (deleteMode) {
+      hintHtml = '<div class="delete-hint">🗑️ <span>Modo Deletar ativo — toque no botão ao lado do progresso para remover a promoção do cliente.</span></div>';
+    }
+
     if (participatingClients.length === 0) {
-      list.innerHTML = '<div class="empty"><div class="empty-icon">🎁</div><div class="empty-text">Nenhum cliente participando de promoções.</div></div>';
+      list.innerHTML = hintHtml + '<div class="empty"><div class="empty-icon">🎁</div><div class="empty-text">Nenhum cliente participando de promoções.</div></div>';
       return;
     }
-    list.innerHTML = participatingClients.map(c => {
+
+    list.innerHTML = hintHtml + participatingClients.map(c => {
       const whatsappFormatted = formatWhatsapp(c.whatsapp);
       const whatsappHtml = c.whatsapp ? `📱 +55 ${escapeHtml(whatsappFormatted)}` : '📱 Sem WhatsApp';
       const addressText = (c.delivery && c.address) ? `${c.address}${c.neighborhood ? ' - ' + c.neighborhood : ''}` : 'Não informado';
@@ -2061,38 +2119,54 @@
         const prod = products.find(p => p.id === parseInt(prodId));
         if (prod && prod.promoActive && count > 0) {
           const imgHtml = prod.image ? `<img src="${prod.image}" style="width:40px; height:40px; border-radius:8px; object-fit:cover; margin-right:8px;">` : `<div style="width:40px; height:40px; border-radius:8px; background:var(--bg-dark); color:var(--accent-orange); display:flex; align-items:center; justify-content:center; margin-right:8px; font-size:20px;">📦</div>`;
-          promoItemsHtml += `<div style="display:flex; align-items:center; background:var(--bg-dark); padding:8px; border-radius:8px; margin-top:8px;">${imgHtml}<div style="flex:1;"><div style="font-size:13px; font-weight:600; color:var(--text-white);">${escapeHtml(prod.name)}</div><div style="font-size:12px; color:var(--text-muted);">Progresso: <strong style="color:var(--accent-orange);">${count}</strong> / ${prod.promoQuantity}</div></div></div>`;
+          const itemDeleteBtn = deleteMode
+            ? `<button class="delete-inline-btn" onclick="deletePromoItem(${c.id}, ${prod.id})" title="Deletar promoção deste produto">🗑️</button>`
+            : '';
+          promoItemsHtml += `<div style="display:flex; align-items:center; background:var(--bg-dark); padding:8px; border-radius:8px; margin-top:8px;">${imgHtml}<div style="flex:1; min-width:0;"><div style="font-size:13px; font-weight:600; color:var(--text-white);">${escapeHtml(prod.name)}</div><div style="font-size:12px; color:var(--text-muted);">Progresso: <strong style="color:var(--accent-orange);">${count}</strong> / ${prod.promoQuantity}</div></div>${itemDeleteBtn}</div>`;
         }
       }
       const waMsg = `Parabéns!\nVocê Comprou e Ganhou!!\nNós da Gordo Express estamos felizes em presentear você!!!`;
       const waLink = c.whatsapp ? `https://wa.me/55${c.whatsapp}?text=${encodeURIComponent(waMsg)}` : '#';
       const waButton = c.whatsapp ? `<button class="btn btn-success" style="margin-top: 12px; padding: 10px;" onclick="window.open('${waLink}', '_blank')"> Enviar Mensagem no WhatsApp</button>` : '<button class="btn btn-dark" style="margin-top: 12px; padding: 10px;" disabled>WhatsApp não informado</button>';
-      // NOVO: Botão Deletar Venda (progresso da promoção deste cliente)
-      const deleteBtn = `<button class="btn btn-danger" style="margin-top: 8px; padding: 10px;" onclick="deletePromoSale(${c.id})">🗑️ Deletar Venda</button>`;
-      return `<div class="client-item" style="flex-direction: column; align-items: stretch;"><div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><div class="client-avatar" style="width:48px; height:48px; font-size:18px;">${getInitials(c.name)}</div><div style="flex:1;"><div class="client-name">${escapeHtml(c.name)}</div><div class="client-meta"><div class="client-meta-row">${whatsappHtml}</div><div class="client-meta-row">📍 ${escapeHtml(addressText)}</div></div></div></div><div style="border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 4px;"><div style="font-size:12px; font-weight:700; color:var(--accent-orange); margin-bottom:4px;">🎁 Promoção Ativa:</div>${promoItemsHtml}</div>${waButton}${deleteBtn}</div>`;
+
+      // NOVO: botão deletar tudo do cliente (aparece no modo Deletar)
+      const clientDeleteBtn = deleteMode
+        ? `<button class="delete-inline-btn" onclick="deletePromoClient(${c.id})" title="Deletar toda a promoção deste cliente">🗑️ Deletar</button>`
+        : '';
+
+      return `<div class="client-item" style="flex-direction: column; align-items: stretch;"><div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><div class="client-avatar" style="width:48px; height:48px; font-size:18px;">${getInitials(c.name)}</div><div style="flex:1; min-width:0;"><div class="client-name">${escapeHtml(c.name)}</div><div class="client-meta"><div class="client-meta-row">${whatsappHtml}</div><div class="client-meta-row">📍 ${escapeHtml(addressText)}</div></div></div>${clientDeleteBtn}</div><div style="border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 4px;"><div style="font-size:12px; font-weight:700; color:var(--accent-orange); margin-bottom:4px;">🎁 Promoção Ativa:</div>${promoItemsHtml}</div>${waButton}</div>`;
     }).join('');
   }
 
-  // NOVO: DELETAR VENDA (PROGRESSO) DE UM CLIENTE NA PROMOÇÃO
-  function deletePromoSale(clientId) {
-    if (!confirm('Deseja realmente deletar as vendas promocionais deste cliente? O progresso será zerado.')) return;
-    const client = clients.find(c => c.id === clientId);
-    if (!client) { toast('Cliente não encontrado', 'error'); return; }
-    client.promoProgress = {};
-    saveClients();
+  // NOVO: limpar busca de promoções
+  function clearPromoSearch() {
+    document.getElementById('searchPromoClient').value = '';
     renderPromos();
-    toast('Vendas promocionais deletadas!', 'success');
+    document.getElementById('searchPromoClient').focus();
   }
 
-  // NOVO: DELETAR TODAS AS VENDAS PROMOCIONAIS
-  function deleteAllPromoSales() {
-    const hasAny = clients.some(c => c.promoProgress && Object.values(c.promoProgress).some(v => v > 0));
-    if (!hasAny) { toast('Nenhuma venda promocional para deletar', 'error'); return; }
-    if (!confirm('Deseja realmente deletar TODAS as vendas promocionais? O progresso de todos os clientes será zerado.')) return;
-    clients.forEach(c => { c.promoProgress = {}; });
+  // NOVO: deletar progresso de promoção de um produto específico do cliente
+  function deletePromoItem(clientId, productId) {
+    const c = clients.find(cl => cl.id === clientId);
+    if (!c || !c.promoProgress) return;
+    const prod = products.find(p => p.id === productId);
+    const prodName = prod ? prod.name : 'produto';
+    if (!confirm(`Deseja realmente deletar a promoção de "${prodName}" para ${c.name}?`)) return;
+    delete c.promoProgress[productId];
     saveClients();
     renderPromos();
-    toast('Todas as vendas promocionais foram deletadas!', 'success');
+    toast('Promoção deletada!', 'success');
+  }
+
+  // NOVO: deletar toda a promoção do cliente
+  function deletePromoClient(clientId) {
+    const c = clients.find(cl => cl.id === clientId);
+    if (!c) return;
+    if (!confirm(`Deseja realmente deletar TODAS as promoções de ${c.name}?`)) return;
+    c.promoProgress = {};
+    saveClients();
+    renderPromos();
+    toast('Promoções do cliente deletadas!', 'success');
   }
 
   // ============ CATALOG ============
@@ -2272,9 +2346,35 @@
   // ============ SALES ============
   function renderSales() {
     const list = document.getElementById('salesList');
-    if (sales.length === 0) { list.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Nenhuma venda registrada</div></div>'; }
-    else {
-      list.innerHTML = sales.map(s => {
+    const searchInput = document.getElementById('searchSale');
+    const rawSearch = searchInput ? searchInput.value : '';
+    const search = rawSearch.toLowerCase().trim();
+    const clearBtn = document.getElementById('clearSaleSearch');
+    if (clearBtn) clearBtn.classList.toggle('show', rawSearch.length > 0);
+
+    // NOVO: modo deletar ao digitar "Deletar"
+    const deleteMode = search.includes('deletar');
+
+    let filtered = sales;
+    if (!deleteMode && search) {
+      filtered = sales.filter(s => {
+        const clientName = s.client ? (s.client.name || '').toLowerCase() : '';
+        const itemsMatch = s.items.some(i => (i.name || '').toLowerCase().includes(search));
+        const idMatch = String(s.id).includes(search);
+        const totalMatch = s.total.toFixed(2).includes(search);
+        return clientName.includes(search) || itemsMatch || idMatch || totalMatch;
+      });
+    }
+
+    let hintHtml = '';
+    if (deleteMode) {
+      hintHtml = '<div class="delete-hint">🗑️ <span>Modo Deletar ativo — toque no botão ao lado do valor para excluir a venda.</span></div>';
+    }
+
+    if (filtered.length === 0) {
+      list.innerHTML = hintHtml + '<div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Nenhuma venda registrada</div></div>';
+    } else {
+      list.innerHTML = hintHtml + filtered.map(s => {
         const d = new Date(s.date);
         const dateStr = d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
         const itemsChips = s.items.map(i => {
@@ -2283,7 +2383,13 @@
           return `<div class="sale-item-chip">${imgPart}<div class="sale-item-chip-text"><span class="sale-item-chip-name">${i.qty}× ${escapeHtml(i.name)}</span>${descPart}</div></div>`;
         }).join('');
         const clientHtml = s.client ? `<div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border);"><div style="font-size: 12px; font-weight: 700; color: var(--accent-orange); margin-bottom: 4px;">👤 ${escapeHtml(s.client.name)}</div><div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">${s.client.whatsapp ? `📱 +55 ${formatWhatsapp(s.client.whatsapp)}<br>` : '📱 Sem WhatsApp<br>'}${s.client.delivery && s.client.address ? `📍 ${escapeHtml(s.client.address)}${s.client.neighborhood ? ' - ' + escapeHtml(s.client.neighborhood) : ''}` : ''}</div></div>` : '<div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 11px; color: var(--text-muted);">👤 Consumidor Final</div>';
-        return `<div class="sale-item"><div class="sale-header"><div class="sale-header-left"><div class="sale-id">Venda #${String(s.id).slice(-6)}</div><div class="sale-date">${dateStr}</div></div><div class="sale-header-right"><div class="sale-total">R$ ${s.total.toFixed(2)}</div><button class="icon-btn delete" onclick="deleteSale(${s.id})" title="Excluir venda">🗑️</button></div></div><div class="sale-items-list">${itemsChips}</div>${clientHtml}</div>`;
+
+        // NOVO: botão deletar ao lado do valor da venda
+        const deleteBtn = deleteMode
+          ? `<button class="delete-inline-btn" onclick="deleteSale(${s.id})" title="Deletar venda">🗑️ Deletar</button>`
+          : '';
+
+        return `<div class="sale-item"><div class="sale-header"><div><div class="sale-id">Venda #${String(s.id).slice(-6)}</div><div class="sale-date">${dateStr}</div></div><div class="sale-total-wrap"><div class="sale-total">R$ ${s.total.toFixed(2)}</div>${deleteBtn}</div></div><div class="sale-items-list">${itemsChips}</div>${clientHtml}</div>`;
       }).join('');
     }
     document.getElementById('statSales').textContent = sales.length;
@@ -2291,23 +2397,22 @@
     document.getElementById('statRevenue').textContent = 'R$ ' + revenue.toFixed(0);
   }
 
-  // DELETAR UMA VENDA INDIVIDUAL
+  // NOVO: limpar busca de vendas
+  function clearSaleSearch() {
+    document.getElementById('searchSale').value = '';
+    renderSales();
+    document.getElementById('searchSale').focus();
+  }
+
+  // NOVO: deletar venda
   function deleteSale(id) {
-    if (!confirm('Deseja realmente excluir esta venda? Esta ação não pode ser desfeita.')) return;
+    const sale = sales.find(s => s.id === id);
+    if (!sale) return;
+    if (!confirm(`Deseja realmente deletar a venda #${String(id).slice(-6)} (R$ ${sale.total.toFixed(2)})?`)) return;
     sales = sales.filter(s => s.id !== id);
     localStorage.setItem('pdv_sales', JSON.stringify(sales));
     renderSales();
-    toast('Venda excluída!', 'success');
-  }
-
-  // DELETAR TODAS AS VENDAS
-  function deleteAllSales() {
-    if (sales.length === 0) { toast('Nenhuma venda para excluir', 'error'); return; }
-    if (!confirm('Deseja realmente apagar TODAS as vendas? Esta ação não pode ser desfeita.')) return;
-    sales = [];
-    localStorage.setItem('pdv_sales', JSON.stringify(sales));
-    renderSales();
-    toast('Todas as vendas foram excluídas!', 'success');
+    toast('Venda deletada!', 'success');
   }
 
   // ============ NOVAS FUNÇÕES DE PAGAMENTO ============

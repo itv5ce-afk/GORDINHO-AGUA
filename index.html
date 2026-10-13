@@ -960,7 +960,9 @@
     background: var(--bg-card); border: 1px solid var(--border);
     padding: 14px; border-radius: var(--radius-sm); margin-bottom: 8px;
   }
-  .sale-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .sale-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; }
+  .sale-header-left { flex: 1; min-width: 0; }
+  .sale-header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .sale-id { font-weight: 700; font-size: 13px; color: var(--accent-orange); }
   .sale-date { font-size: 12px; color: var(--text-muted); }
   .sale-total { font-size: 18px; font-weight: 800; color: var(--success); }
@@ -973,6 +975,14 @@
   .sale-item-chip-text { display: flex; flex-direction: column; line-height: 1.2; }
   .sale-item-chip-name { font-weight: 600; color: var(--text-white); }
   .sale-item-chip-desc { font-size: 10px; color: var(--text-muted); font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+
+  /* SALES ACTIONS ROW */
+  .sales-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .sales-actions .btn { flex: 1; }
 
   /* PROMO WIN MODAL */
   .promo-win-content { text-align: center; padding: 10px 0; }
@@ -1226,6 +1236,10 @@
           <div class="stat-value" id="statRevenue">R$ 0</div>
           <div class="stat-label">Faturamento</div>
         </div>
+      </div>
+      <!-- NOVO: BOTÃO DELETAR VENDAS -->
+      <div class="sales-actions">
+        <button class="btn btn-danger" onclick="deleteAllSales()">🗑️ Deletar Todas as Vendas</button>
       </div>
       <div id="salesList"></div>
     </div>
@@ -2233,12 +2247,31 @@
           return `<div class="sale-item-chip">${imgPart}<div class="sale-item-chip-text"><span class="sale-item-chip-name">${i.qty}× ${escapeHtml(i.name)}</span>${descPart}</div></div>`;
         }).join('');
         const clientHtml = s.client ? `<div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border);"><div style="font-size: 12px; font-weight: 700; color: var(--accent-orange); margin-bottom: 4px;">👤 ${escapeHtml(s.client.name)}</div><div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">${s.client.whatsapp ? `📱 +55 ${formatWhatsapp(s.client.whatsapp)}<br>` : '📱 Sem WhatsApp<br>'}${s.client.delivery && s.client.address ? `📍 ${escapeHtml(s.client.address)}${s.client.neighborhood ? ' - ' + escapeHtml(s.client.neighborhood) : ''}` : ''}</div></div>` : '<div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 11px; color: var(--text-muted);">👤 Consumidor Final</div>';
-        return `<div class="sale-item"><div class="sale-header"><div><div class="sale-id">Venda #${String(s.id).slice(-6)}</div><div class="sale-date">${dateStr}</div></div><div class="sale-total">R$ ${s.total.toFixed(2)}</div></div><div class="sale-items-list">${itemsChips}</div>${clientHtml}</div>`;
+        return `<div class="sale-item"><div class="sale-header"><div class="sale-header-left"><div class="sale-id">Venda #${String(s.id).slice(-6)}</div><div class="sale-date">${dateStr}</div></div><div class="sale-header-right"><div class="sale-total">R$ ${s.total.toFixed(2)}</div><button class="icon-btn delete" onclick="deleteSale(${s.id})" title="Excluir venda">🗑️</button></div></div><div class="sale-items-list">${itemsChips}</div>${clientHtml}</div>`;
       }).join('');
     }
     document.getElementById('statSales').textContent = sales.length;
     const revenue = sales.reduce((s, sale) => s + sale.total, 0);
     document.getElementById('statRevenue').textContent = 'R$ ' + revenue.toFixed(0);
+  }
+
+  // NOVO: DELETAR UMA VENDA INDIVIDUAL
+  function deleteSale(id) {
+    if (!confirm('Deseja realmente excluir esta venda? Esta ação não pode ser desfeita.')) return;
+    sales = sales.filter(s => s.id !== id);
+    localStorage.setItem('pdv_sales', JSON.stringify(sales));
+    renderSales();
+    toast('Venda excluída!', 'success');
+  }
+
+  // NOVO: DELETAR TODAS AS VENDAS
+  function deleteAllSales() {
+    if (sales.length === 0) { toast('Nenhuma venda para excluir', 'error'); return; }
+    if (!confirm('Deseja realmente apagar TODAS as vendas? Esta ação não pode ser desfeita.')) return;
+    sales = [];
+    localStorage.setItem('pdv_sales', JSON.stringify(sales));
+    renderSales();
+    toast('Todas as vendas foram excluídas!', 'success');
   }
 
   // ============ NOVAS FUNÇÕES DE PAGAMENTO ============

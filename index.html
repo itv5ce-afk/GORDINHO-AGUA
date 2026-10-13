@@ -239,9 +239,9 @@
     max-width: 430px;
     background: var(--bg-dark);
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
-    padding: 12px 28px 20px;
+    padding: 12px 20px 20px;
     z-index: 100;
   }
   @media (min-width: 768px) {
@@ -265,6 +265,30 @@
   .nav-btn:active { transform: scale(0.9); }
   .nav-btn svg { width: 28px; height: 28px; }
 
+  /* ============ BOTÃO PDV CENTRAL NA BARRA INFERIOR ============ */
+  .nav-btn-pdv {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: var(--accent-orange);
+    color: #1a1a1a;
+    box-shadow: 0 6px 18px rgba(245,166,35,0.45), 0 0 0 5px var(--bg-dark);
+    padding: 0;
+    flex-shrink: 0;
+    margin-top: -14px;
+    position: relative;
+    z-index: 2;
+  }
+  .nav-btn-pdv svg {
+    width: 30px;
+    height: 30px;
+  }
+  .nav-btn-pdv:active {
+    transform: scale(0.9);
+    background: var(--accent-orange-dark);
+    box-shadow: 0 3px 10px rgba(245,166,35,0.6), 0 0 0 5px var(--bg-dark);
+  }
+
   /* ============ INNER VIEWS (PDV, CATÁLOGO, ETC) ============ */
   .inner-view {
     display: none;
@@ -286,30 +310,9 @@
     z-index: 50;
   }
   
-  /* BOTÃO PDV NO CATÁLOGO */
+  /* BOTÃO PDV NO CATÁLOGO - OCULTO CONFORME SOLICITADO */
   .btn-pdv-nav {
-    margin-left: auto;
-    background: var(--accent-orange);
-    color: #1a1a1a;
-    border: none;
-    padding: 8px 16px;
-    border-radius: var(--radius-sm);
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s;
-    font-family: inherit;
-  }
-  .btn-pdv-nav:active {
-    transform: scale(0.95);
-    background: var(--accent-orange-dark);
-  }
-  .btn-pdv-nav svg {
-    width: 18px;
-    height: 18px;
+    display: none;
   }
 
   .back-btn {
@@ -448,7 +451,7 @@
     border: 1px solid var(--border);
   }
 
-  /* ============ NOVO: BOTÃO FINALIZAR VENDA COM 3CM DE ALTURA ============ */
+  /* ============ BOTÃO FINALIZAR VENDA COM 3CM DE ALTURA ============ */
   .btn-finalizar-venda {
     height: 3cm;
     min-height: 3cm;
@@ -1211,11 +1214,12 @@
     </div>
   </div>
 
-  <!-- INNER VIEW: CATÁLOGO -->
+  <!-- INNER VIEW: CATÁLOGO (BOTÃO PDV SUPERIOR OCULTO) -->
   <div class="inner-view" id="viewCatalog">
     <div class="inner-header">
       <button class="back-btn" onclick="goHome()">←</button>
       <span class="inner-title">Catálogo</span>
+      <!-- Botão PDV do cabeçalho OCULTO via CSS (.btn-pdv-nav { display: none; }) -->
       <button class="btn-pdv-nav" onclick="openInnerView('pdv')">
         <svg viewBox="0 0 44 44" fill="none">
           <path d="M10 14L14 14L18 30L32 30L36 18H16" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1339,11 +1343,19 @@
     </div>
   </div>
 
-  <!-- BOTTOM NAV -->
+  <!-- BOTTOM NAV - COM PDV CENTRAL -->
   <div class="bottom-nav">
     <button class="nav-btn" onclick="goHome()" title="Início">
       <svg viewBox="0 0 28 28" fill="white">
         <path d="M14 3L3 12V24C3 24.6 3.4 25 4 25H10V18C10 17.4 10.4 17 11 17H17C17.6 17 18 17.4 18 18V25H24C24.6 25 25 24.6 25 24V12L14 3Z"/>
+      </svg>
+    </button>
+    <!-- BOTÃO PDV CENTRAL (MANTIDO) -->
+    <button class="nav-btn nav-btn-pdv" onclick="openInnerView('pdv')" title="PDV">
+      <svg viewBox="0 0 44 44" fill="none">
+        <path d="M10 14L14 14L18 30L32 30L36 18H16" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="18" cy="34" r="3" fill="#1a1a1a"/>
+        <circle cx="30" cy="34" r="3" fill="#1a1a1a"/>
       </svg>
     </button>
     <button class="nav-btn" onclick="openMenu()" title="Menu">
@@ -1789,14 +1801,11 @@
       osc.connect(gain);
       gain.connect(ctx.destination);
       
-      // Onda quadrada a 1500Hz gera um bip agudo, alto e característico de leitor de código de barras
       osc.type = 'square';
       osc.frequency.setValueAtTime(1500, ctx.currentTime);
       
-      // Volume alto (0.4 é seguro para não distorcer, mas é bem audível)
       gain.gain.setValueAtTime(0.4, ctx.currentTime);
       
-      // Duração curta e precisa (120ms)
       osc.start();
       osc.stop(ctx.currentTime + 0.12);
     } catch (e) {
@@ -1812,21 +1821,18 @@
       if (!cameras || cameras.length === 0) { toast('Nenhuma câmera encontrada', 'error'); return; }
       const cam = cameras.find(c => /back|traseira|rear|environment/i.test(c.label)) || cameras[cameras.length - 1];
       
-      // Variáveis para evitar leitura duplicada em milissegundos (evita "metralhadora" de bips)
       let lastScannedCode = '';
       let lastScanTime = 0;
 
       await html5QrCode.start(cam.id, { fps: 10, qrbox: { width: 320, height: 140 }, aspectRatio: 1.77 },
         (decodedText) => {
           const now = Date.now();
-          // Evita bip e leitura duplicada se for o mesmo código em menos de 800ms
           if (decodedText === lastScannedCode && (now - lastScanTime) < 800) {
             return;
           }
           lastScannedCode = decodedText;
           lastScanTime = now;
 
-          // Toca o bip agudo e alto imediatamente ao escanear com sucesso
           playScanBeep();
 
           if (scanMode === 'cart') addToCart(decodedText);
@@ -2081,7 +2087,6 @@
     const clearBtn = document.getElementById('clearPromoSearch');
     if (clearBtn) clearBtn.classList.toggle('show', rawSearch.length > 0);
 
-    // NOVO: modo deletar ao digitar "Deletar"
     const deleteMode = search.includes('deletar');
 
     const list = document.getElementById('promoClientList');
@@ -2129,7 +2134,6 @@
       const waLink = c.whatsapp ? `https://wa.me/55${c.whatsapp}?text=${encodeURIComponent(waMsg)}` : '#';
       const waButton = c.whatsapp ? `<button class="btn btn-success" style="margin-top: 12px; padding: 10px;" onclick="window.open('${waLink}', '_blank')"> Enviar Mensagem no WhatsApp</button>` : '<button class="btn btn-dark" style="margin-top: 12px; padding: 10px;" disabled>WhatsApp não informado</button>';
 
-      // NOVO: botão deletar tudo do cliente (aparece no modo Deletar)
       const clientDeleteBtn = deleteMode
         ? `<button class="delete-inline-btn" onclick="deletePromoClient(${c.id})" title="Deletar toda a promoção deste cliente">🗑️ Deletar</button>`
         : '';
@@ -2138,14 +2142,12 @@
     }).join('');
   }
 
-  // NOVO: limpar busca de promoções
   function clearPromoSearch() {
     document.getElementById('searchPromoClient').value = '';
     renderPromos();
     document.getElementById('searchPromoClient').focus();
   }
 
-  // NOVO: deletar progresso de promoção de um produto específico do cliente
   function deletePromoItem(clientId, productId) {
     const c = clients.find(cl => cl.id === clientId);
     if (!c || !c.promoProgress) return;
@@ -2158,7 +2160,6 @@
     toast('Promoção deletada!', 'success');
   }
 
-  // NOVO: deletar toda a promoção do cliente
   function deletePromoClient(clientId) {
     const c = clients.find(cl => cl.id === clientId);
     if (!c) return;
@@ -2352,7 +2353,6 @@
     const clearBtn = document.getElementById('clearSaleSearch');
     if (clearBtn) clearBtn.classList.toggle('show', rawSearch.length > 0);
 
-    // NOVO: modo deletar ao digitar "Deletar"
     const deleteMode = search.includes('deletar');
 
     let filtered = sales;
@@ -2384,7 +2384,6 @@
         }).join('');
         const clientHtml = s.client ? `<div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border);"><div style="font-size: 12px; font-weight: 700; color: var(--accent-orange); margin-bottom: 4px;">👤 ${escapeHtml(s.client.name)}</div><div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">${s.client.whatsapp ? `📱 +55 ${formatWhatsapp(s.client.whatsapp)}<br>` : '📱 Sem WhatsApp<br>'}${s.client.delivery && s.client.address ? `📍 ${escapeHtml(s.client.address)}${s.client.neighborhood ? ' - ' + escapeHtml(s.client.neighborhood) : ''}` : ''}</div></div>` : '<div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 11px; color: var(--text-muted);">👤 Consumidor Final</div>';
 
-        // NOVO: botão deletar ao lado do valor da venda
         const deleteBtn = deleteMode
           ? `<button class="delete-inline-btn" onclick="deleteSale(${s.id})" title="Deletar venda">🗑️ Deletar</button>`
           : '';
@@ -2397,14 +2396,12 @@
     document.getElementById('statRevenue').textContent = 'R$ ' + revenue.toFixed(0);
   }
 
-  // NOVO: limpar busca de vendas
   function clearSaleSearch() {
     document.getElementById('searchSale').value = '';
     renderSales();
     document.getElementById('searchSale').focus();
   }
 
-  // NOVO: deletar venda
   function deleteSale(id) {
     const sale = sales.find(s => s.id === id);
     if (!sale) return;
